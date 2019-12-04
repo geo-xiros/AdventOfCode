@@ -33,11 +33,14 @@ namespace AdventOfCode
 
             _answer1 = FindDistances().Min();
 
+            //_wire1 = CreateWireSegments("R8,U5,L5,D3");
+            //_wire2 = CreateWireSegments("U7,R6,D4,L4");
+            _wire1 = CreateWireSegments("R75,D30,R83,U83,L12,D49,R71,U7,L72");
+            _wire2 = CreateWireSegments("U62,R66,U55,R34,D71,R55,D58,R83");
 
-            _wire1 = CreateWireSegments("R75,D30,R83,U83,L12,D49,R71,U7,L72");// R75,D30,R83,U83,L12,D49,R71,U7,L72");
-            _wire2 = CreateWireSegments("U62,R66,U55,R34,D71,R55,D58,R83");// U62,R66,U55,R34,D71,R55,D58,R83");
-            var x1 = FindDistances2(_wire1, _wire2);
-            var x2 = FindDistances2(_wire2, _wire1);
+            var x1 = FindDistances2(_wire1, _wire2).OrderBy(i => i).ToList();
+            var x2 = FindDistances2(_wire2, _wire1).OrderBy(i => i).ToList();
+
             for (var i = 0; i < x1.Count; i++)
             {
                 Console.WriteLine($"{x1[i]} + {x2[i]} = {x1[i] + x2[i]}");
@@ -46,14 +49,13 @@ namespace AdventOfCode
         private IList<int> FindDistances()
         {
             var distances = new List<int>();
-            foreach (var l1 in _wire1)
+            foreach (var wireSegment1 in _wire1)
             {
-                foreach (var l2 in _wire2)
+                foreach (var wireSegment2 in _wire2)
                 {
-                    if (DoIntersect(l1, l2))
+                    if (wireSegment1.IntersectsWith(wireSegment2, out var intersection))
                     {
-                        var intersection = Intersection(l1, l2);
-                        var distance = CalculateManhattanDistance(new Point(0, 0), intersection);
+                        var distance = CalculateManhattanDistance(intersection);
 
                         if (distance != 0)
                         {
@@ -69,36 +71,33 @@ namespace AdventOfCode
         {
             var distances = new List<int>();
             int distanceToIntersection = 0;
-            foreach (var l1 in wire1)
+            foreach (var wireSegment1 in wire1)
             {
-                foreach (var l2 in wire2)
+                foreach (var wireSegment2 in wire2)
                 {
-                    if (DoIntersect(l1, l2))
+                    if (wireSegment1.IntersectsWith(wireSegment1, out var intersection))
                     {
-                        var intersection = Intersection(l1, l2);
-                        if ((intersection.X == l1.From.X &&
-                             intersection.Y == l1.From.Y)||
-                            (intersection.X == l1.To.X &&
-                             intersection.Y == l1.To.Y) ||
-                            (intersection.X == l2.From.X &&
-                             intersection.Y == l2.From.Y) ||
-                            (intersection.X == l2.To.X &&
-                             intersection.Y == l2.To.Y))
-                        {
-                            continue;
-                        }
-                        var intersectionLength = new WireSegment(l1.From, intersection).Length;
+                        Console.WriteLine($"{wireSegment1} {wireSegment2} - {intersection}");
+                        var intersectionLength = new WireSegment(wireSegment1.From, intersection).Length;
                         distances.Add(distanceToIntersection + intersectionLength);
                     }
                 }
-                distanceToIntersection += l1.Length;
+                distanceToIntersection += wireSegment1.Length;
             }
 
             return distances;
         }
+
+        public int CalculateManhattanDistance(Point point1)
+        {
+            Point point2 = new Point(0, 0);
+            return Math.Abs(point1.X - point2.X) + Math.Abs(point1.Y - point2.Y);
+        }
+
+        #region Initialize wires
         private void LoadWires()
         {
-            using (var file = File.OpenRead(@"G:\Development\Code\c#\AdventOfCode\AdventOfCode\Input\input3.txt"))
+            using (var file = File.OpenRead(@"C:\Users\g.xiros\Documents\coding\adventofcode\AdventOfCode\Input\input3.txt"))
             {
                 using (var reader = new StreamReader(file))
                 {
@@ -108,140 +107,26 @@ namespace AdventOfCode
                 file.Close();
             }
         }
-        private Point Intersection(WireSegment ws1, WireSegment ws2)
-        {
-            int x = (ws1.From.X == ws1.To.X) ? x = ws1.From.X : x = ws2.From.X;
-            int y = (ws1.From.Y == ws1.To.Y) ? y = ws1.From.Y : y = ws2.From.Y;
 
-            return new Point(x, y);
-        }
-        public int CalculateManhattanDistance(Point p1, Point p2)
-        {
-            return Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
-        }
         private List<WireSegment> CreateWireSegments(string str)
         {
             var wireSegments = new List<WireSegment>();
             var wireMovements = str.Split(',');
-            var currentPoint = new Point(0, 0);
+            var fromPoint = new Point(0, 0);
 
             for (var i = 0; i < wireMovements.Length; i++)
             {
-                var newPoint = MoveToPoint(currentPoint, wireMovements[i]);
-                wireSegments.Add(new WireSegment(currentPoint, newPoint));
-                currentPoint = newPoint;
+                var wireSegment = new WireSegment(fromPoint, wireMovements[i]);
+                wireSegments.Add(wireSegment);
+                fromPoint = wireSegment.To;
             }
 
             return wireSegments;
         }
-        private Point MoveToPoint(Point currentPoint, string moveTo)
-        {
-            var command = moveTo.Substring(0, 1);
-            var position = moveTo.Substring(1);
-            int dx = 0;
-            int dy = 0;
-            if (command == "R")
-            {
-                dx = currentPoint.X + int.Parse(position);
-                dy = currentPoint.Y;
-            }
-            else if (command == "L")
-            {
-                dx = currentPoint.X - int.Parse(position);
-                dy = currentPoint.Y;
-
-            }
-            else if (command == "D")
-            {
-                dx = currentPoint.X;
-                dy = currentPoint.Y - int.Parse(position);
-
-            }
-            else if (command == "U")
-            {
-                dx = currentPoint.X;
-                dy = currentPoint.Y + int.Parse(position);
-
-            }
-
-            return new Point(dx, dy);
-        }
-        private int Max(int x1, int x2)
-        {
-            return x1 > x2 ? x1 : x2;
-        }
-        private int Min(int x1, int x2)
-        {
-            return x1 > x2 ? x2 : x1;
-        }
-        // Given three colinear points p, q, r, the function checks if 
-        // point q lies on line segment 'pr' 
-        private bool OnSegment(Point p, Point q, Point r)
-        {
-            if (q.X <= Max(p.X, r.X) && q.X >= Min(p.X, r.X) &&
-                q.Y <= Max(p.Y, r.Y) && q.Y >= Min(p.Y, r.Y))
-                return true;
-
-            return false;
-        }
-
-        // To find orientation of ordered triplet (p, q, r). 
-        // The function returns following values 
-        // 0 --> p, q and r are colinear 
-        // 1 --> Clockwise 
-        // 2 --> Counterclockwise 
-        private int Orientation(Point p, Point q, Point r)
-        {
-            // See https://www.geeksforgeeks.org/orientation-3-ordered-points/ 
-            // for details of below formula. 
-            int val = (q.Y - p.Y) * (r.X - q.X) -
-                      (q.X - p.X) * (r.Y - q.Y);
-
-            if (val == 0) return 0;  // colinear 
-
-            return (val > 0) ? 1 : 2; // clock or counterclock wise 
-        }
-
-        // The main function that returns true if line segment 'p1q1' 
-        // and 'p2q2' intersect. 
-        private bool DoIntersect(WireSegment l1, WireSegment l2)
-        {
-            Point p1 = l1.From; Point q1 = l1.To;
-            Point p2 = l2.From; Point q2 = l2.To;
-
-            // Find the four orientations needed for general and 
-            // special cases 
-            int o1 = Orientation(p1, q1, p2);
-            int o2 = Orientation(p1, q1, q2);
-            int o3 = Orientation(p2, q2, p1);
-            int o4 = Orientation(p2, q2, q1);
-
-            // General case 
-            if (o1 != o2 && o3 != o4)
-                return true;
-
-            // Special Cases 
-            // p1, q1 and p2 are colinear and p2 lies on segment p1q1 
-            if (o1 == 0 && OnSegment(p1, p2, q1)) return true;
-
-            // p1, q1 and q2 are colinear and q2 lies on segment p1q1 
-            if (o2 == 0 && OnSegment(p1, q2, q1)) return true;
-
-            // p2, q2 and p1 are colinear and p1 lies on segment p2q2 
-            if (o3 == 0 && OnSegment(p2, p1, q2)) return true;
-
-            // p2, q2 and q1 are colinear and q1 lies on segment p2q2 
-            if (o4 == 0 && OnSegment(p2, q1, q2)) return true;
-
-            return false; // Doesn't fall in any of the above cases 
-        }
-        public override string ToString()
-        {
-            return $"Day 3 => Answer A:{_answer1}, Answer B:{_answer2}";
-        }
 
         private class WireSegment
         {
+            public WireSegment(Point from, string moveTo) : this(from, CalculateToPoint(from, moveTo)) { }
             public WireSegment(Point from, Point to)
             {
                 From = from;
@@ -252,12 +137,105 @@ namespace AdventOfCode
             public Point From { get; set; }
             public Point To { get; set; }
             public int Length { get; set; }
+
+            public static Point CalculateToPoint(Point from, string moveTo)
+            {
+                var command = moveTo.Substring(0, 1);
+                var position = moveTo.Substring(1);
+                int dx = 0;
+                int dy = 0;
+                if (command == "R")
+                {
+                    dx = from.X + int.Parse(position);
+                    dy = from.Y;
+                }
+                else if (command == "L")
+                {
+                    dx = from.X - int.Parse(position);
+                    dy = from.Y;
+
+                }
+                else if (command == "D")
+                {
+                    dx = from.X;
+                    dy = from.Y - int.Parse(position);
+
+                }
+                else if (command == "U")
+                {
+                    dx = from.X;
+                    dy = from.Y + int.Parse(position);
+
+                }
+
+                return new Point(dx, dy);
+            }
+
+
+            public bool IntersectsWith(WireSegment wire, out Point intersectionPoint)
+            {
+                int x = 0;
+                int y = 0;
+
+                if ((wire.From.X == wire.To.X) && (this.From.Y == this.To.Y))
+                {
+                    x = wire.From.X;
+                    y = this.From.Y;
+                }
+                else if ((wire.From.Y == wire.To.Y) && (this.From.X == this.To.X))
+                {
+                    x = this.From.X;
+                    y = wire.From.Y;
+                }
+
+                intersectionPoint = new Point(x, y);
+
+                if (x == 0 && y == 0)
+                {
+                    return false;
+                }
+
+                return wire.IntersectsWith(intersectionPoint) &&
+                       this.IntersectsWith(intersectionPoint);
+            }
+            private bool IntersectsWith(Point p)
+            {
+                if (From.X == To.X)
+                {
+                    if (From.Y < To.Y)
+                    {
+                        return (p.Y > From.Y && p.Y < To.Y);
+                    }
+                    else
+                    {
+                        return (p.Y > To.Y && p.Y < From.Y);
+                    }
+                }
+                else if (From.Y == To.Y)
+                {
+                    if (From.X < To.X)
+                    {
+                        return (p.X > From.X && p.X < To.X);
+                    }
+                    else
+                    {
+                        return (p.X > To.X && p.X < From.X);
+                    }
+                }
+
+                return false;
+            }
+
             public override string ToString()
             {
                 return $"({From}-{To})";
             }
         }
+        #endregion
 
-
+        public override string ToString()
+        {
+            return $"Day 3 => Answer A:{_answer1}, Answer B:{_answer2}";
+        }
     }
 }

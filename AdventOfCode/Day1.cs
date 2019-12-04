@@ -9,7 +9,7 @@ namespace AdventOfCode
 
         public Day1()
         {
-            using (var file = File.OpenRead(@"C:\Users\g.xiros\Documents\coding\adventofcode\AdventOfCode\Input\input1.txt"))
+            using (var file = File.OpenRead("..\\..\\input1.txt"))
             {
                 using (var reader = new StreamReader(file))
                 {

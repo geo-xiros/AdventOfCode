@@ -62,7 +62,7 @@ namespace AdventOfCode
         private void LoadFile()
         {
             _memory = File
-                .ReadAllText(@"C:\Users\g.xiros\Documents\coding\adventofcode\AdventOfCode\Input\input2.txt")
+                .ReadAllText("..\\..\\input2.txt")
                 .Split(',')
                 .Select(int.Parse)
                 .ToArray();

@@ -33,11 +33,19 @@ namespace AdventOfCode
 
             _answer1 = FindDistances().Min();
 
+
+            _wire1 = CreateWireSegments("R75,D30,R83,U83,L12,D49,R71,U7,L72");// R75,D30,R83,U83,L12,D49,R71,U7,L72");
+            _wire2 = CreateWireSegments("U62,R66,U55,R34,D71,R55,D58,R83");// U62,R66,U55,R34,D71,R55,D58,R83");
+            var x1 = FindDistances2(_wire1, _wire2);
+            var x2 = FindDistances2(_wire2, _wire1);
+            for (var i = 0; i < x1.Count; i++)
+            {
+                Console.WriteLine($"{x1[i]} + {x2[i]} = {x1[i] + x2[i]}");
+            }
         }
         private IList<int> FindDistances()
         {
             var distances = new List<int>();
-
             foreach (var l1 in _wire1)
             {
                 foreach (var l2 in _wire2)
@@ -53,6 +61,37 @@ namespace AdventOfCode
                         }
                     }
                 }
+            }
+
+            return distances;
+        }
+        private IList<int> FindDistances2(List<WireSegment> wire1, List<WireSegment> wire2)
+        {
+            var distances = new List<int>();
+            int distanceToIntersection = 0;
+            foreach (var l1 in wire1)
+            {
+                foreach (var l2 in wire2)
+                {
+                    if (DoIntersect(l1, l2))
+                    {
+                        var intersection = Intersection(l1, l2);
+                        if ((intersection.X == l1.From.X &&
+                             intersection.Y == l1.From.Y)||
+                            (intersection.X == l1.To.X &&
+                             intersection.Y == l1.To.Y) ||
+                            (intersection.X == l2.From.X &&
+                             intersection.Y == l2.From.Y) ||
+                            (intersection.X == l2.To.X &&
+                             intersection.Y == l2.To.Y))
+                        {
+                            continue;
+                        }
+                        var intersectionLength = new WireSegment(l1.From, intersection).Length;
+                        distances.Add(distanceToIntersection + intersectionLength);
+                    }
+                }
+                distanceToIntersection += l1.Length;
             }
 
             return distances;
@@ -207,11 +246,12 @@ namespace AdventOfCode
             {
                 From = from;
                 To = to;
+                Length = Math.Abs(From.X - To.X) + Math.Abs(From.Y - To.Y);
             }
 
             public Point From { get; set; }
             public Point To { get; set; }
-
+            public int Length { get; set; }
             public override string ToString()
             {
                 return $"({From}-{To})";

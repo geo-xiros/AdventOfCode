@@ -216,7 +216,7 @@ namespace AdventOfCode
 
         public override string ToString()
         {
-            return $"Day 3 => Answer A:{_answer1}, Answer B:{_answer2}";
+            return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
     }
 }

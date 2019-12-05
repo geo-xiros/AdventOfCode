@@ -4,8 +4,8 @@ namespace AdventOfCode
 {
     class Day1
     {
-        private long _total1;
-        private long _total2;
+        private long _answer1;
+        private long _answer2;
 
         public Day1()
         {
@@ -17,11 +17,11 @@ namespace AdventOfCode
                     {
                         var temp = (long.Parse(reader.ReadLine()) / 3) - 2;
 
-                        _total1 += temp;
+                        _answer1 += temp;
                         
                         while (temp > 0)
                         {
-                            _total2 += temp;
+                            _answer2 += temp;
                             temp = (temp / 3) - 2;
                         }
                     }
@@ -30,7 +30,9 @@ namespace AdventOfCode
         }
         public override string ToString()
         {
-            return $"Day 1 => Answer A:{_total1}, Answer B:{_total2}";
+            return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
     }
+
+
 }

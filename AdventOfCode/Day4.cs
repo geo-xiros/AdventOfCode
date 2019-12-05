@@ -14,23 +14,23 @@ namespace AdventOfCode
                 .Where(HasOnlyIncreasingDigits)
                 .Where(HasAtLeastTwoAdjacentDigits)
                 .Count();
-            
+
             _answer2 = NumbersBetween(240298, 784956)
                 .Where(HasOnlyIncreasingDigits)
                 .Where(HasExactlyTwoAdjacentDigits)
-                .Count(); 
+                .Count();
         }
 
-        private bool HasAtLeastTwoAdjacentDigits(int number) 
+        private bool HasAtLeastTwoAdjacentDigits(int number)
             => DoubleDigitsOf(number).Any(i => i >= 1);
-        
-        private bool HasExactlyTwoAdjacentDigits(int number) 
+
+        private bool HasExactlyTwoAdjacentDigits(int number)
             => DoubleDigitsOf(number).Any(i => i == 1);
 
         private IList<int> DoubleDigitsOf(int number)
         {
             var numberCounts = new Dictionary<int, int>();
-            
+
             DigitsOf(number).Aggregate((p, c) =>
             {
                 if (p == c)
@@ -38,10 +38,10 @@ namespace AdventOfCode
                     numberCounts.TryGetValue(c, out int count);
                     numberCounts[c] = count + 1;
                 }
-            
+
                 return c;
             });
-            
+
             return numberCounts.Values.ToList();
 
         }
@@ -57,10 +57,10 @@ namespace AdventOfCode
                 yield return number % 10;
             }
         }
-        
+
         public IEnumerable<int> NumbersBetween(int from, int to)
         {
-            for (var i= from; i<= to; i++)
+            for (var i = from; i <= to; i++)
             {
                 yield return i;
             }
@@ -68,7 +68,7 @@ namespace AdventOfCode
 
         public override string ToString()
         {
-            return $"Day 1 => Answer A:{_answer1}, Answer B:{_answer2}";
+            return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
     }
 }

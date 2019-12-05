@@ -8,53 +8,44 @@ namespace AdventOfCode
     {
         private int _answer1;
         private int _answer2;
-        private int _fromRange = 240298;
-        private int _toRange = 784956;
         public Day4()
         {
-            _answer1 = NumbersRange()
-                .Where(DigitsNeverDecrease)
-                .Where(AtLeastOneDouble)
+            _answer1 = NumbersBetween(240298, 784956)
+                .Where(HasOnlyIncreasingDigits)
+                .Where(HasAtLeastTwoAdjacentDigits)
                 .Count();
             
-            _answer2 = NumbersRange()
-                .Where(DigitsNeverDecrease)
-                .Where(TwoDigitsOnly)
+            _answer2 = NumbersBetween(240298, 784956)
+                .Where(HasOnlyIncreasingDigits)
+                .Where(HasExactlyTwoAdjacentDigits)
                 .Count(); 
         }
 
-        private bool AtLeastOneDouble(int number)
+        private bool HasAtLeastTwoAdjacentDigits(int number) 
+            => DoubleDigitsOf(number).Any(i => i >= 1);
+        
+        private bool HasExactlyTwoAdjacentDigits(int number) 
+            => DoubleDigitsOf(number).Any(i => i == 1);
+
+        private IList<int> DoubleDigitsOf(int number)
         {
-            var strNumber = number.ToString();
-
-            for (int i = 1; i < strNumber.Length; i++)
+            var numberCounts = new Dictionary<int, int>();
+            
+            DigitsOf(number).Aggregate((p, c) =>
             {
-
-                if (strNumber[i - 1] == strNumber[i])
+                if (p == c)
                 {
-                    return true;
+                    numberCounts.TryGetValue(c, out int count);
+                    numberCounts[c] = count + 1;
                 }
-            }
-            return false;
+            
+                return c;
+            });
+            
+            return numberCounts.Values.ToList();
+
         }
-
-        private bool TwoDigitsOnly(int number)
-        {
-            var strNumber = number.ToString();
-            var numberCounts = new Dictionary<char, int>();
-
-            for (int i = 1; i < strNumber.Length; i++)
-            {
-
-                if (strNumber[i - 1] == strNumber[i])
-                {
-                    numberCounts.TryGetValue(strNumber[i], out int count);
-                    numberCounts[strNumber[i]] = count + 1;
-                }
-            }
-            return numberCounts.Values.Any(i => i == 1);
-        }
-        private bool DigitsNeverDecrease(int number)
+        private bool HasOnlyIncreasingDigits(int number)
         {
             return DigitsOf(number).Aggregate((p, c) => p < c ? 0 : c) != 0;
         }
@@ -66,13 +57,15 @@ namespace AdventOfCode
                 yield return number % 10;
             }
         }
-        public IEnumerable<int> NumbersRange()
+        
+        public IEnumerable<int> NumbersBetween(int from, int to)
         {
-            for (var i= 240298; i<= 784956; i++)
+            for (var i= from; i<= to; i++)
             {
                 yield return i;
             }
         }
+
         public override string ToString()
         {
             return $"Day 1 => Answer A:{_answer1}, Answer B:{_answer2}";

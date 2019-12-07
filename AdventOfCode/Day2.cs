@@ -9,7 +9,7 @@ namespace AdventOfCode
         private int _answer2;
         public Day2()
         {
-            var computer = new Computer(LoadFile,1);
+            var computer = new Computer(LoadFile);
             
             _answer1 = computer.RunWithNounVerb(12, 2);
             _answer2 = computer.FindVerbAndNounForOutput(19690720);

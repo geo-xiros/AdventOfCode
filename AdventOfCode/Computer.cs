@@ -5,20 +5,12 @@ namespace AdventOfCode
 {
     public class Computer
     {
-        private Dictionary<int, Action<int, int, int>> _instructions;
         private Func<int[]> _loadMemory;
         private int[] _Memory;
-        private int _inputParameter;
-        public Computer(Func<int[]> loadMemory, int inputParameter)
+        private int _diagnosticCode;
+        public Computer(Func<int[]> loadMemory)
         {
             _loadMemory = loadMemory;
-            _inputParameter = inputParameter;
-            _instructions = new Dictionary<int, Action<int, int, int>>();
-            _instructions.Add(1, (value1, value2, address) => _Memory[address] = value1 + value2);
-            _instructions.Add(2, (value1, value2, address) => _Memory[address] = value1 * value2);
-            _instructions.Add(3, (value1, value2, address) => _Memory[address] = _inputParameter);
-            _instructions.Add(4, (value1, value2, address) => Console.WriteLine($"Output value: {_Memory[address]}"));
-            _Memory = _loadMemory();
         }
         public int RunWithNounVerb(int noun, int verb)
         {
@@ -28,52 +20,99 @@ namespace AdventOfCode
 
             return Run();
         }
-        public int Run()
+        public int GetDiagnosticCodeFor(int input)
         {
-
+            _Memory = _loadMemory();
+            Run(input);
+            return _diagnosticCode;
+        }
+        private int Run(int input = 0)
+        {
             for (var i = 0; i < _Memory.Length;)
             {
-                var command = _Memory[i] % 100;
-                var parameterMode1 = (_Memory[i] / 100) % 10;
-                var parameterMode2 = (_Memory[i] / 1000) % 10;
-                var parameterMode3 = (_Memory[i] / 10000) % 10;
+                int tmp = _Memory[i];
+                var command = _Memory[i] % 100; tmp /= 100;
+                var parameterMode1 = tmp % 10; tmp /= 10;
+                var parameterMode2 = tmp % 10; tmp /= 10;
+                var parameterMode3 = tmp % 10;
 
                 if (command == 99)
                 {
                     break;
                 }
 
-                _instructions.TryGetValue(command, out var instruction);
+                Func<int> parameter1 = () => parameterMode1 == 1 ? i + 1 : _Memory[i + 1];
+                Func<int> parameter2 = () => parameterMode2 == 1 ? i + 2 : _Memory[i + 2];
+                Func<int> parameter3 = () => parameterMode3 == 1 ? i + 3 : _Memory[i + 3];
 
-                int parameter1 = _Memory[i + 1];
-                int parameter2 = _Memory[i + 2];
-                int parameter3 = _Memory[i + 3];
-
-                if (parameterMode1 == 0)
+                switch (command)
                 {
-                    parameter1 = _Memory[parameter1];
+                    case 1:
+                        _Memory[parameter3()] = _Memory[parameter1()] + _Memory[parameter2()];
+                        i += 4;
+                        break;
+                    case 2:
+                        _Memory[parameter3()] = _Memory[parameter1()] * _Memory[parameter2()];
+                        i += 4;
+                        break;
+                    case 3:
+                        _Memory[parameter1()] = input;
+                        i += 2;
+                        break;
+                    case 4:
+                        _diagnosticCode = _Memory[parameter1()];
+                        i += 2;
+                        break;
+                    //Opcode 5 is jump -if-true: if the first parameter is non - zero, it sets the instruction pointer to the value from the second parameter.Otherwise, it does nothing.
+                    case 5:
+                        if (_Memory[parameter1()] != 0)
+                        {
+                            i = _Memory[parameter2()];
+                        }
+                        else
+                        {
+                            i += 3;
+                        }
+                        break;
+                    //Opcode 6 is jump -if-false: if the first parameter is zero, it sets the instruction pointer to the value from the second parameter.Otherwise, it does nothing.
+                    case 6:
+                        if (_Memory[parameter1()] == 0)
+                        {
+                            i = _Memory[parameter2()];
+                        }
+                        else
+                        {
+                            i += 3;
+                        }
+                        break;
+                    //Opcode 7 is less than: if the first parameter is less than the second parameter, it stores 1 in the position given by the third parameter.Otherwise, it stores 0.
+                    case 7:
+                        if (_Memory[parameter1()] < _Memory[parameter2()])
+                        {
+                            _Memory[parameter3()] = 1;
+                        }
+                        else
+                        {
+                            _Memory[parameter3()] = 0;
+                        }
+                        i += 4;
+                        break;
+                    //Opcode 8 is equals: if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter.Otherwise, it stores 0.
+                    case 8:
+                        if (_Memory[parameter1()] == _Memory[parameter2()])
+                        {
+                            _Memory[parameter3()] = 1;
+                        }
+                        else
+                        {
+                            _Memory[parameter3()] = 0;
+                        }
+                        i += 4;
+                        break;
+                    default:
+                        break;
                 }
 
-                if (parameterMode2 == 0)
-                {
-                    parameter2 = _Memory[parameter2];
-                }
-                
-                //if (parameterMode3 == 0)
-                //{
-                //    parameter3 = _Memory[parameter3];
-                //}
-
-                instruction(parameter1, parameter2, parameter3);
-
-                if (command == 3 || command == 4)
-                {
-                    i += 2;
-                }
-                else
-                {
-                    i += 4;
-                }
 
             }
             return _Memory[0];

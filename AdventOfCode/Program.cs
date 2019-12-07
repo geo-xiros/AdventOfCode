@@ -12,11 +12,12 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             //        Console.WriteLine(new Day1());
-            //Console.WriteLine(new Day2());
+            Console.WriteLine(new Day2());
             //            Console.WriteLine(new Day3());
-            //          Console.WriteLine(new Day4());
-            var x = new Computer(LoadFile, 1);
-            x.Run();
+            //Console.WriteLine(new Day4());
+            Console.WriteLine(new Day5());
+            //var x = new Computer(LoadFile, 5);
+            //x.Run();
 
             Console.ReadKey();
         }

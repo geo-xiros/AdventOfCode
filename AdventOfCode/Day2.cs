@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace AdventOfCode
@@ -9,9 +10,9 @@ namespace AdventOfCode
         private int _answer2;
         public Day2()
         {
-            var computer = new Computer(LoadFile);
+            var computer = new Computer();
 
-            _answer1 = computer.RunWithNounVerb(12, 2);
+            _answer1 = computer.LoadProgram(LoadFile).Using(12, 2).Run().Output;
             _answer2 = FindVerbAndNounForOutput(computer, 19690720);
 
         }
@@ -21,7 +22,7 @@ namespace AdventOfCode
             {
                 for (var verb = 0; verb < 100; verb++)
                 {
-                    if (computer.RunWithNounVerb(noun, verb) == output)
+                    if (computer.LoadProgram(LoadFile).Using(noun, verb).Run().Output  == output)
                     {
                         return (100 * noun) + verb;
                     }
@@ -30,13 +31,12 @@ namespace AdventOfCode
 
             return 0;
         }
-        private int[] LoadFile()
+        private IEnumerable<int> LoadFile()
         {
             return File
                 .ReadAllText("..\\..\\input2.txt")
                 .Split(',')
-                .Select(int.Parse)
-                .ToArray();
+                .Select(int.Parse);
         }
 
         public override string ToString()

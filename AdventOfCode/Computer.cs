@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode
 {
     public class Computer
     {
-        private Func<int[]> _loadMemory;
         private int[] _Memory;
-        private int _diagnosticCode;
         private int _input;
 
-        public Computer(Func<int[]> loadMemory)
+        public int Output => _Memory[0];
+        public int DiagnosticCode;
+
+        public Computer()
         {
-            _loadMemory = loadMemory;
             _commands = new Dictionary<int, Action<Func<int>, Func<int>, Func<int>>>();
             _commands.Add(1, AddTwoNumbers);
             _commands.Add(2, MultiplyTwoNumbers);
@@ -54,7 +55,7 @@ namespace AdventOfCode
         }
         private void GetOutputValue(Func<int> parameter1, Func<int> parameter2, Func<int> parameter3)
         {
-            _diagnosticCode = _Memory[parameter1()];
+            DiagnosticCode = _Memory[parameter1()];
             _programCounter += 2;
         }
         private void JumpIfTrue(Func<int> parameter1, Func<int> parameter2, Func<int> parameter3)
@@ -107,32 +108,29 @@ namespace AdventOfCode
         #endregion
 
         #region Run Program
-        public int GetDiagnosticCodeFor(int input)
-        {
-            _Memory = _loadMemory();
-            _input = input;
-
-            Run();
-            
-            return _diagnosticCode;
-        }
-
-        public int RunWithNounVerb(int noun, int verb)
-        {
-            _Memory = _loadMemory();
-            _Memory[1] = noun;
-            _Memory[2] = verb;
-
-            Run();
-
-            return _Memory[0];
-        }
-        private void Run()
+        public Computer Run()
         {
             for (_programCounter = 0; _programCounter < _Memory.Length && _command != 99;)
             {
                 _commands[_command](_parameter1, _parameter2, _parameter3);
             }
+            return this;
+        }
+        public Computer Using(int noun, int verb)
+        {
+            _Memory[1] = noun;
+            _Memory[2] = verb;
+            return this;
+        }
+        public Computer Set(int input)
+        {
+            _input = input;
+            return this;
+        }
+        public Computer LoadProgram(Func<IEnumerable<int>> loadProgram)
+        {
+            _Memory = loadProgram().ToArray();
+            return this;
         }
         #endregion
     }

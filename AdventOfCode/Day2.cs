@@ -10,12 +10,26 @@ namespace AdventOfCode
         public Day2()
         {
             var computer = new Computer(LoadFile);
-            
+
             _answer1 = computer.RunWithNounVerb(12, 2);
-            _answer2 = computer.FindVerbAndNounForOutput(19690720);
+            _answer2 = FindVerbAndNounForOutput(computer, 19690720);
 
         }
+        private int FindVerbAndNounForOutput(Computer computer, int output)
+        {
+            for (var noun = 0; noun < 100; noun++)
+            {
+                for (var verb = 0; verb < 100; verb++)
+                {
+                    if (computer.RunWithNounVerb(noun, verb) == output)
+                    {
+                        return (100 * noun) + verb;
+                    }
+                }
+            }
 
+            return 0;
+        }
         private int[] LoadFile()
         {
             return File

@@ -28,12 +28,10 @@ namespace AdventOfCode
         #region Computer command Helpers
         private int _programCounter = 0;
         private int _command => _Memory[_programCounter] % 100;
-        private bool _isParameter1Immediate => ((_Memory[_programCounter] / 100) % 10) == 1;
-        private bool _isParameter2Immediate => ((_Memory[_programCounter] / 1000) % 10) == 1;
-        private bool _isParameter3Immediate => ((_Memory[_programCounter] / 10000) % 10) == 1;
-        private int _parameter1() => _isParameter1Immediate ? _programCounter + 1 : _Memory[_programCounter + 1];
-        private int _parameter2() => _isParameter2Immediate ? _programCounter + 2 : _Memory[_programCounter + 2];
-        private int _parameter3() => _isParameter3Immediate ? _programCounter + 3 : _Memory[_programCounter + 3];
+        private int _parameter1() => _parameterValue(1);
+        private int _parameter2() => _parameterValue(2);
+        private int _parameter3() => _parameterValue(3);
+        private int _parameterValue(int i) => (_Memory[_programCounter] / (int)Math.Pow(10, i + 1) % 10) == 1 ? _programCounter + i : _Memory[_programCounter + i];
 
         #endregion
 

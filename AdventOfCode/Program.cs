@@ -19,7 +19,7 @@ namespace AdventOfCode
             //Console.WriteLine(new Day4());
             Console.WriteLine(new Day5());
             //Console.WriteLine(new Day6());
-
+            
             Console.ReadKey();
         }
 

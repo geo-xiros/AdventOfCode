@@ -28,10 +28,7 @@ namespace AdventOfCode
         #region Computer command Helpers
         private int _programCounter = 0;
         private int _command => _Memory[_programCounter] % 100;
-        private int _parameter1() => _parameterValue(1);
-        private int _parameter2() => _parameterValue(2);
-        private int _parameter3() => _parameterValue(3);
-        private int _parameterValue(int i) => (_Memory[_programCounter] / (int)Math.Pow(10, i + 1) % 10) == 1 ? _programCounter + i : _Memory[_programCounter + i];
+        private int _parameter(int i) => (_Memory[_programCounter] / (int)Math.Pow(10, i + 1) % 10) == 1 ? _programCounter + i : _Memory[_programCounter + i];
 
         #endregion
 
@@ -39,29 +36,29 @@ namespace AdventOfCode
         private Dictionary<int, Action> _commands;
         private void AddTwoNumbers()
         {
-            _Memory[_parameter3()] = _Memory[_parameter1()] + _Memory[_parameter2()];
+            _Memory[_parameter(3)] = _Memory[_parameter(1)] + _Memory[_parameter(2)];
             _programCounter += 4;
         }
         private void MultiplyTwoNumbers()
         {
-            _Memory[_parameter3()] = _Memory[_parameter1()] * _Memory[_parameter2()];
+            _Memory[_parameter(3)] = _Memory[_parameter(1)] * _Memory[_parameter(2)];
             _programCounter += 4;
         }
         private void GetInputValue()
         {
-            _Memory[_parameter1()] = _input;
+            _Memory[_parameter(1)] = _input;
             _programCounter += 2;
         }
         private void GetOutputValue()
         {
-            DiagnosticCode = _Memory[_parameter1()];
+            DiagnosticCode = _Memory[_parameter(1)];
             _programCounter += 2;
         }
         private void JumpIfTrue()
         {
-            if (_Memory[_parameter1()] != 0)
+            if (_Memory[_parameter(1)] != 0)
             {
-                _programCounter = _Memory[_parameter2()];
+                _programCounter = _Memory[_parameter(2)];
             }
             else
             {
@@ -70,9 +67,9 @@ namespace AdventOfCode
         }
         private void JumpIfFalse()
         {
-            if (_Memory[_parameter1()] == 0)
+            if (_Memory[_parameter(1)] == 0)
             {
-                _programCounter = _Memory[_parameter2()];
+                _programCounter = _Memory[_parameter(2)];
             }
             else
             {
@@ -82,25 +79,25 @@ namespace AdventOfCode
 
         private void Store1IfLessThan()
         {
-            if (_Memory[_parameter1()] < _Memory[_parameter2()])
+            if (_Memory[_parameter(1)] < _Memory[_parameter(2)])
             {
-                _Memory[_parameter3()] = 1;
+                _Memory[_parameter(3)] = 1;
             }
             else
             {
-                _Memory[_parameter3()] = 0;
+                _Memory[_parameter(3)] = 0;
             }
             _programCounter += 4;
         }
         private void Store1IfEqual()
         {
-            if (_Memory[_parameter1()] == _Memory[_parameter2()])
+            if (_Memory[_parameter(1)] == _Memory[_parameter(2)])
             {
-                _Memory[_parameter3()] = 1;
+                _Memory[_parameter(3)] = 1;
             }
             else
             {
-                _Memory[_parameter3()] = 0;
+                _Memory[_parameter(3)] = 0;
             }
             _programCounter += 4;
         }

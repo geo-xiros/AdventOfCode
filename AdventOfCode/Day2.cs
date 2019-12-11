@@ -6,8 +6,8 @@ namespace AdventOfCode
 {
     class Day2
     {
-        private int _answer1;
-        private int _answer2;
+        private long _answer1;
+        private long _answer2;
         public Day2()
         {
             var computer = new Computer();
@@ -31,12 +31,12 @@ namespace AdventOfCode
 
             return 0;
         }
-        private IEnumerable<int> LoadFile()
+        private IEnumerable<long> LoadFile()
         {
             return File
                 .ReadAllText("..\\..\\input2.txt")
                 .Split(',')
-                .Select(int.Parse);
+                .Select(long.Parse);
         }
 
         public override string ToString()

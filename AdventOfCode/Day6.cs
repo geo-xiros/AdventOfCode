@@ -6,8 +6,8 @@ namespace AdventOfCode
 {
     public class Day6
     {
-        private int _answer1;
-        private int _answer2;
+        private long _answer1;
+        private long _answer2;
         private Dictionary<string, Object> _orbitsMap;
 
         public Day6()
@@ -17,7 +17,7 @@ namespace AdventOfCode
             _answer1 = GetTotalOrbits(orbits);
 
         }
-        private int GetTotalOrbits(IEnumerable<string> orbits)
+        private long GetTotalOrbits(IEnumerable<string> orbits)
         {
             _orbitsMap = new Dictionary<string, Object>();
 

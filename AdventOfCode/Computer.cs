@@ -6,15 +6,36 @@ namespace AdventOfCode
 {
     public class Computer
     {
-        private int[] _Memory;
-        private int _input;
+        private long[] _Memory;
+        private long _input;
+        private long _relativeBase;
+        public long Output => _Memory[0];
+        public long DiagnosticCode => Output2.Last();
+        public List<long> Output2 = new List<long>();
+        public long this[long address]
+        {
+            get
+            {
+                if (address >= _Memory.Length)
+                {
+                    Array.Resize(ref _Memory, (int)address+1);
+                }
 
-        public int Output => _Memory[0];
-        public int DiagnosticCode;
+                return _Memory[address];
+            }
+            set
+            {
+                if (address >= _Memory.Length)
+                {
+                    Array.Resize(ref _Memory, (int)address+1);
+                }
 
+                _Memory[address] = value;
+            }
+        }
         public Computer()
         {
-            _commands = new Dictionary<int, Action>();
+            _commands = new Dictionary<long, Action>();
             _commands.Add(1, AddTwoNumbers);
             _commands.Add(2, MultiplyTwoNumbers);
             _commands.Add(3, GetInputValue);
@@ -23,42 +44,53 @@ namespace AdventOfCode
             _commands.Add(6, JumpIfFalse);
             _commands.Add(7, Store1IfLessThan);
             _commands.Add(8, Store1IfEqual);
+            _commands.Add(9, AdjustRelativeBase);
         }
 
         #region Computer command Helpers
-        private int _programCounter = 0;
-        private int _command => _Memory[_programCounter] % 100;
-        private int _parameter(int i) => (_Memory[_programCounter] / (int)Math.Pow(10, i + 1) % 10) == 1 ? _programCounter + i : _Memory[_programCounter + i];
+        private long _programCounter = 0;
+        private long _command => this[_programCounter] % 100;
+        private long _parameter(int i)
+        {
+            var positionMode = this[_programCounter] / (long)Math.Pow(10, i + 1) % 10;
+            var relativeBase = positionMode == 2
+                ? _programCounter + i + _relativeBase
+                : _programCounter + i;
 
+            return positionMode == 1
+                ? _programCounter + i
+                : this[relativeBase];
+        }
         #endregion
 
         #region commands
-        private Dictionary<int, Action> _commands;
+        private Dictionary<long, Action> _commands;
         private void AddTwoNumbers()
         {
-            _Memory[_parameter(3)] = _Memory[_parameter(1)] + _Memory[_parameter(2)];
+            this[_parameter(3)] = this[_parameter(1)] + this[_parameter(2)];
             _programCounter += 4;
         }
         private void MultiplyTwoNumbers()
         {
-            _Memory[_parameter(3)] = _Memory[_parameter(1)] * _Memory[_parameter(2)];
+            this[_parameter(3)] = this[_parameter(1)] * this[_parameter(2)];
             _programCounter += 4;
         }
         private void GetInputValue()
         {
-            _Memory[_parameter(1)] = _input;
+            this[_parameter(1)] = _input;
             _programCounter += 2;
         }
         private void GetOutputValue()
         {
-            DiagnosticCode = _Memory[_parameter(1)];
+            Console.WriteLine(this[_parameter(1)]);
+            Output2.Add(this[_parameter(1)]);
             _programCounter += 2;
         }
         private void JumpIfTrue()
         {
-            if (_Memory[_parameter(1)] != 0)
+            if (this[_parameter(1)] != 0)
             {
-                _programCounter = _Memory[_parameter(2)];
+                _programCounter = this[_parameter(2)];
             }
             else
             {
@@ -67,9 +99,9 @@ namespace AdventOfCode
         }
         private void JumpIfFalse()
         {
-            if (_Memory[_parameter(1)] == 0)
+            if (this[_parameter(1)] == 0)
             {
-                _programCounter = _Memory[_parameter(2)];
+                _programCounter = this[_parameter(2)];
             }
             else
             {
@@ -79,27 +111,32 @@ namespace AdventOfCode
 
         private void Store1IfLessThan()
         {
-            if (_Memory[_parameter(1)] < _Memory[_parameter(2)])
+            if (this[_parameter(1)] < this[_parameter(2)])
             {
-                _Memory[_parameter(3)] = 1;
+                this[_parameter(3)] = 1;
             }
             else
             {
-                _Memory[_parameter(3)] = 0;
+                this[_parameter(3)] = 0;
             }
             _programCounter += 4;
         }
         private void Store1IfEqual()
         {
-            if (_Memory[_parameter(1)] == _Memory[_parameter(2)])
+            if (this[_parameter(1)] == this[_parameter(2)])
             {
-                _Memory[_parameter(3)] = 1;
+                this[_parameter(3)] = 1;
             }
             else
             {
-                _Memory[_parameter(3)] = 0;
+                this[_parameter(3)] = 0;
             }
             _programCounter += 4;
+        }
+        private void AdjustRelativeBase()
+        {
+            _relativeBase = this[_parameter(1)];
+            _programCounter += 2;
         }
         #endregion
 
@@ -112,18 +149,18 @@ namespace AdventOfCode
             }
             return this;
         }
-        public Computer Using(int noun, int verb)
+        public Computer Using(long noun, long verb)
         {
-            _Memory[1] = noun;
-            _Memory[2] = verb;
+            this[1] = noun;
+            this[2] = verb;
             return this;
         }
-        public Computer Set(int input)
+        public Computer Set(long input)
         {
             _input = input;
             return this;
         }
-        public Computer LoadProgram(Func<IEnumerable<int>> loadProgram)
+        public Computer LoadProgram(Func<IEnumerable<long>> loadProgram)
         {
             _Memory = loadProgram().ToArray();
             return this;

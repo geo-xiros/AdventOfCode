@@ -21,12 +21,12 @@ namespace AdventOfCode
             return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
         
-        private IEnumerable<int> LoadFile()
+        private IEnumerable<long> LoadFile()
         {
             return File
                 .ReadAllText("..\\..\\input5.txt")
                 .Split(',')
-                .Select(int.Parse);
+                .Select(long.Parse);
         }
     }
 }

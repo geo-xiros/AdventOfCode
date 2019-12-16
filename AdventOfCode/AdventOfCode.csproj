@@ -44,7 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Computer.cs" />
+    <Compile Include="Day7.cs" />
+    <Compile Include="IntComputer.cs" />
     <Compile Include="Day1.cs" />
     <Compile Include="Day2.cs" />
     <Compile Include="Day3.cs" />
@@ -65,7 +66,9 @@
     <Content Include="input3.txt" />
     <Content Include="input5.txt" />
     <Content Include="input6.txt" />
+    <Content Include="input7.txt" />
     <Content Include="input8.txt" />
+    <Content Include="input9.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

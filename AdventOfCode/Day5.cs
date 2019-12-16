@@ -10,7 +10,7 @@ namespace AdventOfCode
         private long _answer2;
         public Day5()
         {
-            var computer = new Computer();
+            var computer = new IntComputer();
 
             _answer1 = computer.LoadProgram(LoadFile).Set(1).Run().DiagnosticCode;
             _answer2 = computer.LoadProgram(LoadFile).Set(5).Run().DiagnosticCode;

@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace AdventOfCode
 {
-    public class Computer
+    public class IntComputer
     {
         private long[] _Memory;
-        private long _input;
+        private Queue<long> _input;
         private long _relativeBase;
         public long Output => _Memory[0];
         public long DiagnosticCode => Output2.Last();
@@ -18,7 +18,7 @@ namespace AdventOfCode
             {
                 if (address >= _Memory.Length)
                 {
-                    Array.Resize(ref _Memory, (int)address+1);
+                    Array.Resize(ref _Memory, (int)address + 1);
                 }
 
                 return _Memory[address];
@@ -27,13 +27,13 @@ namespace AdventOfCode
             {
                 if (address >= _Memory.Length)
                 {
-                    Array.Resize(ref _Memory, (int)address+1);
+                    Array.Resize(ref _Memory, (int)address + 1);
                 }
 
                 _Memory[address] = value;
             }
         }
-        public Computer()
+        public IntComputer()
         {
             _commands = new Dictionary<long, Action>();
             _commands.Add(1, AddTwoNumbers);
@@ -54,12 +54,12 @@ namespace AdventOfCode
         {
             var positionMode = this[_programCounter] / (long)Math.Pow(10, i + 1) % 10;
             var relativeBase = positionMode == 2
-                ? _programCounter + i + _relativeBase
-                : _programCounter + i;
+                ? _relativeBase
+                : 0;
 
             return positionMode == 1
                 ? _programCounter + i
-                : this[relativeBase];
+                : this[_programCounter + i] + relativeBase;
         }
         #endregion
 
@@ -77,12 +77,11 @@ namespace AdventOfCode
         }
         private void GetInputValue()
         {
-            this[_parameter(1)] = _input;
+            this[_parameter(1)] = _input.Dequeue();
             _programCounter += 2;
         }
         private void GetOutputValue()
         {
-            Console.WriteLine(this[_parameter(1)]);
             Output2.Add(this[_parameter(1)]);
             _programCounter += 2;
         }
@@ -141,7 +140,7 @@ namespace AdventOfCode
         #endregion
 
         #region Run Program
-        public Computer Run()
+        public IntComputer Run()
         {
             for (_programCounter = 0; _programCounter < _Memory.Length && _command != 99;)
             {
@@ -149,18 +148,23 @@ namespace AdventOfCode
             }
             return this;
         }
-        public Computer Using(long noun, long verb)
+        public IntComputer Using(long noun, long verb)
         {
             this[1] = noun;
             this[2] = verb;
             return this;
         }
-        public Computer Set(long input)
+        public IntComputer Set(Queue<long> input)
         {
             _input = input;
             return this;
         }
-        public Computer LoadProgram(Func<IEnumerable<long>> loadProgram)
+        public IntComputer Set(long input)
+        {
+            _input = new Queue<long>(new long[] { input });
+            return this;
+        }
+        public IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram)
         {
             _Memory = loadProgram().ToArray();
             return this;

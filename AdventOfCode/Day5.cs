@@ -13,18 +13,11 @@ namespace AdventOfCode
         public Day5()
         {
             var computer = new IntComputer();
-            var input = new BlockingCollection<long>();
-            var output = new BlockingCollection<long>();
 
-            input.Add(1);
-            computer.LoadProgram(LoadFile).SetInput(input).SetOutput(output).Run();
-            _answer1 = output.LastOrDefault();
-
-            input.Add(5);
-            computer.LoadProgram(LoadFile).SetInput(input).SetOutput(output).Run();
-            _answer2 = output.LastOrDefault();
+            computer.LoadProgram(LoadFile).SetInput(() => 1).SetOutput((o) => _answer1 = o).Run();
+            computer.LoadProgram(LoadFile).SetInput(() => 5).SetOutput((o) => _answer2 = o).Run();
         }
-        
+
         public IEnumerator<long> Input1()
         {
             yield return 1;

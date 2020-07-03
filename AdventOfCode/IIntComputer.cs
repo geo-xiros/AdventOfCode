@@ -16,8 +16,8 @@ namespace AdventOfCode
         IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram);
         IntComputer Run();
         IntComputer Using(long noun, long verb);
-        BlockingCollection<long> Input { get; set; }
-        BlockingCollection<long> Output { get; set; }
+        Func<long> Input { get; set; }
+        Action<long> Output { get; set; }
         long? PhaseSetting { get; set; }
     }
 }

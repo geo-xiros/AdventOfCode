@@ -15,7 +15,7 @@ namespace AdventOfCode
             HighestSignalSentToTheThrusters(new long[] { 5, 6, 7, 8, 9 }, GetPart2Outputfor).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer B:{t.Result}"));
         }
 
-        private async Task<long> HighestSignalSentToTheThrusters(long[] phaseSettings,Func<long[],Task<long>> outputFunc)
+        private async Task<long> HighestSignalSentToTheThrusters(long[] phaseSettings, Func<long[], Task<long>> outputFunc)
         {
             return (await Task.WhenAll(Permutations<long>.AllFor(phaseSettings).Select(p => outputFunc(p)))).Max();
         }
@@ -66,8 +66,8 @@ namespace AdventOfCode
             => Task.Run(()
                 => new IntComputer()
                     .LoadProgram(LoadFile)
-                    .SetInput(input)
-                    .SetOutput(output)
+                    .SetInput(() => input.Take())
+                    .SetOutput((o) => output.Add(o))
                     .SetPhase(phase)
                     .Run());
 

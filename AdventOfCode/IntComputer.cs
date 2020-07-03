@@ -82,13 +82,13 @@ namespace AdventOfCode
             }
             else
             {
-                computer.Parameter1 = computer.Input.Take();
+                computer.Parameter1 = computer.Input();
             }
             return computer.pc + 2;
         }
         private long GetOutputValue()
         {
-            computer.Output.Add(computer.Parameter1);
+            computer.Output(computer.Parameter1);
             return computer.pc + 2;
         }
         private long JumpIfTrue()
@@ -145,8 +145,8 @@ namespace AdventOfCode
 
     public class IntComputer : IIntComputer
     {
-        public BlockingCollection<long> Input { get; set; }
-        public BlockingCollection<long> Output { get; set; }
+        public Func<long> Input { get; set; }
+        public Action<long> Output { get; set; }
         public long pc { get; private set; }
         private long Command => memory[pc] % 100;
         public long MemoryZeroAddress => memory[0];
@@ -203,13 +203,13 @@ namespace AdventOfCode
             return this;
         }
 
-        public IntComputer SetOutput(BlockingCollection<long> output)
+        public IntComputer SetOutput(Action<long> output)
         {
             Output = output;
             return this;
         }
 
-        public IntComputer SetInput(BlockingCollection<long> input)
+        public IntComputer SetInput(Func<long> input)
         {
             Input = input;
             return this;

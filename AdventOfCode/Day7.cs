@@ -11,38 +11,21 @@ namespace AdventOfCode
     {
         public Day7()
         {
-            HighestSignalSentToTheThrusters(new long[] { 0, 1, 2, 3, 4 }, GetPart1Outputfor).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer A:{t.Result}"));
-            HighestSignalSentToTheThrusters(new long[] { 5, 6, 7, 8, 9 }, GetPart2Outputfor).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer B:{t.Result}"));
+            HighestSignalSentToTheThrusters(new long[] { 0, 1, 2, 3, 4 }).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer A:{t.Result}"));
+            HighestSignalSentToTheThrusters(new long[] { 5, 6, 7, 8, 9 }).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer B:{t.Result}"));
         }
 
-        private async Task<long> HighestSignalSentToTheThrusters(long[] phaseSettings, Func<long[], Task<long>> outputFunc)
+        private async Task<long> HighestSignalSentToTheThrusters(long[] phaseSettings)
         {
-            return (await Task.WhenAll(Permutations<long>.AllFor(phaseSettings).Select(p => outputFunc(p)))).Max();
+            var permutationsTasks = Permutations<long>.AllFor(phaseSettings)
+                .Select(p => GetOutputFor(p));
+
+            var results = await Task.WhenAll(permutationsTasks);
+
+            return results.Max();
         }
 
-        private async Task<long> GetPart1Outputfor(long[] phaseSettings)
-        {
-            var outputA = new BlockingCollection<long>();
-            var outputB = new BlockingCollection<long>();
-            var outputC = new BlockingCollection<long>();
-            var outputD = new BlockingCollection<long>();
-            var outputE = new BlockingCollection<long>();
-
-            var inputA = new BlockingCollection<long>();
-            inputA.Add(0);
-
-            var A = RunComputerWithWiredIO(phaseSettings[0], inputA, outputA);
-            var B = RunComputerWithWiredIO(phaseSettings[1], outputA, outputB);
-            var C = RunComputerWithWiredIO(phaseSettings[2], outputB, outputC);
-            var D = RunComputerWithWiredIO(phaseSettings[3], outputC, outputD);
-            var E = RunComputerWithWiredIO(phaseSettings[4], outputD, outputE);
-
-            await Task.WhenAll(A, B, C, D, E);
-
-            return outputE.LastOrDefault();
-        }
-
-        private async Task<long> GetPart2Outputfor(long[] phaseSettings)
+        private async Task<long> GetOutputFor(long[] phaseSettings)
         {
             var outputA = new BlockingCollection<long>();
             var outputB = new BlockingCollection<long>();
@@ -62,6 +45,7 @@ namespace AdventOfCode
 
             return outputE.LastOrDefault();
         }
+
         private Task RunComputerWithWiredIO(long phase, BlockingCollection<long> input, BlockingCollection<long> output)
             => Task.Run(()
                 => new IntComputer()

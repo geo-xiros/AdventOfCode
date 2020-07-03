@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace AdventOfCode
 {
@@ -9,30 +11,48 @@ namespace AdventOfCode
 
         public Day1()
         {
-            using (var file = File.OpenRead("..\\..\\input1.txt"))
+            var fuelsRequiredByModule = FileLines("..\\..\\input1.txt")
+                .Select(mass => FuelRequired(long.Parse(mass)));
+
+            _answer1 = fuelsRequiredByModule
+                .Sum();
+
+            _answer2 = fuelsRequiredByModule
+                .Select(FuelRequiredByFuel)
+                .Sum();
+        }
+
+        private long FuelRequired(long mass)
+            => (mass / 3) - 2;
+
+        private long FuelRequiredByFuel(long fuels)
+        {
+            long totalFuels = 0;
+
+            while (fuels > 0)
+            {
+                totalFuels += fuels;
+                fuels = FuelRequired(fuels);
+            }
+
+            return totalFuels;
+        }
+
+        public IEnumerable<string> FileLines(string filename)
+        {
+            using (var file = File.OpenRead(filename))
             {
                 using (var reader = new StreamReader(file))
                 {
                     while (!reader.EndOfStream)
                     {
-                        var temp = (long.Parse(reader.ReadLine()) / 3) - 2;
-
-                        _answer1 += temp;
-                        
-                        while (temp > 0)
-                        {
-                            _answer2 += temp;
-                            temp = (temp / 3) - 2;
-                        }
+                        yield return reader.ReadLine();
                     }
                 }
             }
         }
+
         public override string ToString()
-        {
-            return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
-        }
+            => $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
     }
-
-
 }

@@ -19,11 +19,13 @@ namespace AdventOfCode
             //Console.WriteLine(new Day2());
             //Console.WriteLine(new Day3());
             //Console.WriteLine(new Day4());
-            //Console.WriteLine(new Day5());
+            Console.WriteLine(new Day2());
+            Console.WriteLine(new Day5());
+            new Day7();
             //Console.WriteLine(new Day6());
             //Console.WriteLine(new Day7());
             //Console.WriteLine(new Day8());
-            Console.WriteLine(new Day9());
+            //Console.WriteLine(new Day9());
 
 
             Console.ReadKey();
@@ -41,7 +43,7 @@ namespace AdventOfCode
             var computer = new IntComputer()
                 .LoadProgram(LoadFile)// testing () => new long[] { 109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99 })
                 .Run();
-            _answer1 = computer.Output2.Last();
+            //_answer1 = computer.Output2.Last();
         }
         private IEnumerable<long> LoadFile()
         {

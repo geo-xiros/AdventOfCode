@@ -1,172 +1,229 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Runtime.Remoting.Messaging;
 
 namespace AdventOfCode
 {
-    public class IntComputer
+    public class IntMemory
     {
-        private long[] _Memory;
-        private Queue<long> _input;
-        private long _relativeBase;
-        public long Output => _Memory[0];
-        public long DiagnosticCode => Output2.Last();
-        public List<long> Output2 = new List<long>();
+        private Dictionary<long, long> memory;
+
+        public IntMemory()
+        {
+            this.memory = new Dictionary<long, long>();
+        }
+
+        public IntMemory(long[] memory)
+        {
+            this.memory = Enumerable
+                .Range(0, memory.Length)
+                .Zip(memory, (i, m) => new KeyValuePair<long, long>(i, m))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+        }
+
         public long this[long address]
         {
             get
             {
-                if (address >= _Memory.Length)
-                {
-                    Array.Resize(ref _Memory, (int)address + 1);
-                }
-
-                return _Memory[address];
+                memory.TryGetValue(address, out var value);
+                return value;
             }
-            set
-            {
-                if (address >= _Memory.Length)
-                {
-                    Array.Resize(ref _Memory, (int)address + 1);
-                }
 
-                _Memory[address] = value;
-            }
+            set => memory[address] = value;
         }
+
+        public long Length => memory.Keys.Max();
+    }
+    public interface IComputer
+    {
+
+    }
+    public class IntCommands
+    {
+        private Dictionary<long, Func<long>> commands;
+        private IIntComputer computer;
+        public IntCommands(IIntComputer computer)
+        {
+            this.computer = computer;
+            commands = new Dictionary<long, Func<long>>();
+            commands.Add(1, AddTwoNumbers);
+            commands.Add(2, MultiplyTwoNumbers);
+            commands.Add(3, GetInputValue);
+            commands.Add(4, GetOutputValue);
+            commands.Add(5, JumpIfTrue);
+            commands.Add(6, JumpIfFalse);
+            commands.Add(7, Store1IfLessThan);
+            commands.Add(8, Store1IfEqual);
+            commands.Add(9, AdjustRelativeBase);
+        }
+
+        public long Run(long command)
+            => commands[command]();
+
+        private long AddTwoNumbers()
+        {
+            computer.Parameter3 = computer.Parameter1 + computer.Parameter2;
+            return computer.pc + 4;
+        }
+        private long MultiplyTwoNumbers()
+        {
+            computer.Parameter3 = computer.Parameter1 * computer.Parameter2;
+            return computer.pc + 4;
+        }
+        private long GetInputValue()
+        {
+            if (computer.PhaseSetting.HasValue)
+            {
+                computer.Parameter1 = computer.PhaseSetting.Value;
+                computer.PhaseSetting = null;
+            }
+            else
+            {
+                computer.Parameter1 = computer.Input.Take();
+            }
+            return computer.pc + 2;
+        }
+        private long GetOutputValue()
+        {
+            computer.Output.Add(computer.Parameter1);
+            return computer.pc + 2;
+        }
+        private long JumpIfTrue()
+        {
+            if (computer.Parameter1 != 0)
+            {
+                return computer.Parameter2;
+            }
+
+            return computer.pc + 3;
+        }
+        private long JumpIfFalse()
+        {
+            if (computer.Parameter1 == 0)
+            {
+                return computer.Parameter2;
+            }
+
+            return computer.pc + 3;
+        }
+
+        private long Store1IfLessThan()
+        {
+            if (computer.Parameter1 < computer.Parameter2)
+            {
+                computer.Parameter3 = 1;
+            }
+            else
+            {
+                computer.Parameter3 = 0;
+            }
+
+            return computer.pc + 4;
+        }
+        private long Store1IfEqual()
+        {
+            if (computer.Parameter1 == computer.Parameter2)
+            {
+                computer.Parameter3 = 1;
+            }
+            else
+            {
+                computer.Parameter3 = 0;
+            }
+
+            return computer.pc + 4;
+        }
+        private long AdjustRelativeBase()
+        {
+            computer.RelativeBase = computer.Parameter1;
+            return computer.pc + 2;
+        }
+    }
+
+    public class IntComputer : IIntComputer
+    {
+        public BlockingCollection<long> Input { get; set; }
+        public BlockingCollection<long> Output { get; set; }
+        public long pc { get; private set; }
+        private long Command => memory[pc] % 100;
+        public long MemoryZeroAddress => memory[0];
+        public long RelativeBase { get; set; }
+
+        public IntMemory memory;
+        private IntCommands commands;
+
         public IntComputer()
         {
-            _commands = new Dictionary<long, Action>();
-            _commands.Add(1, AddTwoNumbers);
-            _commands.Add(2, MultiplyTwoNumbers);
-            _commands.Add(3, GetInputValue);
-            _commands.Add(4, GetOutputValue);
-            _commands.Add(5, JumpIfTrue);
-            _commands.Add(6, JumpIfFalse);
-            _commands.Add(7, Store1IfLessThan);
-            _commands.Add(8, Store1IfEqual);
-            _commands.Add(9, AdjustRelativeBase);
+            commands = new IntCommands(this);
         }
-
-        #region Computer command Helpers
-        private long _programCounter = 0;
-        private long _command => this[_programCounter] % 100;
-        private long _parameter(int i)
-        {
-            var positionMode = this[_programCounter] / (long)Math.Pow(10, i + 1) % 10;
-            var relativeBase = positionMode == 2
-                ? _relativeBase
-                : 0;
-
-            return positionMode == 1
-                ? _programCounter + i
-                : this[_programCounter + i] + relativeBase;
-        }
-        #endregion
-
-        #region commands
-        private Dictionary<long, Action> _commands;
-        private void AddTwoNumbers()
-        {
-            this[_parameter(3)] = this[_parameter(1)] + this[_parameter(2)];
-            _programCounter += 4;
-        }
-        private void MultiplyTwoNumbers()
-        {
-            this[_parameter(3)] = this[_parameter(1)] * this[_parameter(2)];
-            _programCounter += 4;
-        }
-        private void GetInputValue()
-        {
-            this[_parameter(1)] = _input.Dequeue();
-            _programCounter += 2;
-        }
-        private void GetOutputValue()
-        {
-            Output2.Add(this[_parameter(1)]);
-            _programCounter += 2;
-        }
-        private void JumpIfTrue()
-        {
-            if (this[_parameter(1)] != 0)
-            {
-                _programCounter = this[_parameter(2)];
-            }
-            else
-            {
-                _programCounter += 3;
-            }
-        }
-        private void JumpIfFalse()
-        {
-            if (this[_parameter(1)] == 0)
-            {
-                _programCounter = this[_parameter(2)];
-            }
-            else
-            {
-                _programCounter += 3;
-            }
-        }
-
-        private void Store1IfLessThan()
-        {
-            if (this[_parameter(1)] < this[_parameter(2)])
-            {
-                this[_parameter(3)] = 1;
-            }
-            else
-            {
-                this[_parameter(3)] = 0;
-            }
-            _programCounter += 4;
-        }
-        private void Store1IfEqual()
-        {
-            if (this[_parameter(1)] == this[_parameter(2)])
-            {
-                this[_parameter(3)] = 1;
-            }
-            else
-            {
-                this[_parameter(3)] = 0;
-            }
-            _programCounter += 4;
-        }
-        private void AdjustRelativeBase()
-        {
-            _relativeBase = this[_parameter(1)];
-            _programCounter += 2;
-        }
-        #endregion
 
         #region Run Program
         public IntComputer Run()
         {
-            for (_programCounter = 0; _programCounter < _Memory.Length && _command != 99;)
+            pc = 0;
+
+            while (true)
             {
-                _commands[_command]();
+                var command = Command;
+                if (command == 99)
+                {
+                    break;
+                }
+
+                pc = commands.Run(command);
             }
+
             return this;
         }
+
+        public long Parameter1 { get => memory[GetParameter(1)]; set => memory[GetParameter(1)] = value; }
+        public long Parameter2 { get => memory[GetParameter(2)]; set => memory[GetParameter(2)] = value; }
+        public long Parameter3 { get => memory[GetParameter(3)]; set => memory[GetParameter(3)] = value; }
+        public long? PhaseSetting { get; set; }
+
+        private long GetParameter(int i)
+        {
+            var positionMode = memory[pc] / (long)Math.Pow(10, i + 1) % 10;
+            var relativeBase = positionMode == 2
+                ? RelativeBase
+                : 0;
+
+            return positionMode == 1
+                ? pc + i
+                : memory[pc + i] + relativeBase;
+        }
+
         public IntComputer Using(long noun, long verb)
         {
-            this[1] = noun;
-            this[2] = verb;
+            memory[1] = noun;
+            memory[2] = verb;
             return this;
         }
-        public IntComputer Set(Queue<long> input)
+
+        public IntComputer SetOutput(BlockingCollection<long> output)
         {
-            _input = input;
+            Output = output;
             return this;
         }
-        public IntComputer Set(long input)
+
+        public IntComputer SetInput(BlockingCollection<long> input)
         {
-            _input = new Queue<long>(new long[] { input });
+            Input = input;
             return this;
         }
+
         public IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram)
         {
-            _Memory = loadProgram().ToArray();
+            memory = new IntMemory(loadProgram().ToArray());
+            return this;
+        }
+
+        internal IntComputer SetPhase(long phaseSetting)
+        {
+            PhaseSetting = phaseSetting;
             return this;
         }
         #endregion

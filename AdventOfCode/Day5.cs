@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 
 namespace AdventOfCode
 {
@@ -11,16 +13,29 @@ namespace AdventOfCode
         public Day5()
         {
             var computer = new IntComputer();
+            var input = new BlockingCollection<long>();
+            var output = new BlockingCollection<long>();
 
-            _answer1 = computer.LoadProgram(LoadFile).Set(1).Run().DiagnosticCode;
-            _answer2 = computer.LoadProgram(LoadFile).Set(5).Run().DiagnosticCode;
+            input.Add(1);
+            computer.LoadProgram(LoadFile).SetInput(input).SetOutput(output).Run();
+            _answer1 = output.LastOrDefault();
+
+            input.Add(5);
+            computer.LoadProgram(LoadFile).SetInput(input).SetOutput(output).Run();
+            _answer2 = output.LastOrDefault();
         }
         
+        public IEnumerator<long> Input1()
+        {
+            yield return 1;
+        }
+
+
         public override string ToString()
         {
             return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
-        
+
         private IEnumerable<long> LoadFile()
         {
             return File

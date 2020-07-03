@@ -45,8 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Day7.cs" />
-    <Compile Include="IIntComputer.cs" />
-    <Compile Include="IntComputer.cs" />
+    <Compile Include="IntComputer\IIntComputer.cs" />
+    <Compile Include="IntComputer\IntCommands.cs" />
+    <Compile Include="IntComputer\IntComputer.cs" />
     <Compile Include="Day1.cs" />
     <Compile Include="Day2.cs" />
     <Compile Include="Day3.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Day5.cs" />
     <Compile Include="Day6.cs" />
     <Compile Include="Day8.cs" />
+    <Compile Include="IntComputer\IntMemory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

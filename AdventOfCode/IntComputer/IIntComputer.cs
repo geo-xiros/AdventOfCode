@@ -6,16 +6,11 @@ namespace AdventOfCode
 {
     public interface IIntComputer
     {
-        long MemoryZeroAddress { get; }
         long RelativeBase { get; set; }
         long Parameter1 { get; set; }
         long Parameter2 { get; set; }
         long Parameter3 { get; set; }
         long pc { get; }
-
-        IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram);
-        IntComputer Run();
-        IntComputer Using(long noun, long verb);
         Func<long> Input { get; set; }
         Action<long> Output { get; set; }
         long? PhaseSetting { get; set; }

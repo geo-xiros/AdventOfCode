@@ -27,12 +27,6 @@ namespace AdventOfCode
             }
         }
 
-        public IEnumerator<long> Input1()
-        {
-            yield return 1;
-        }
-
-
         public override string ToString()
         {
             return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
@@ -41,7 +35,7 @@ namespace AdventOfCode
         private IEnumerable<long> LoadFile()
         {
             return File
-                .ReadAllText("..\\..\\input5.txt")
+                .ReadAllText("..\\..\\inputs\\input5.txt")
                 .Split(',')
                 .Select(long.Parse);
         }

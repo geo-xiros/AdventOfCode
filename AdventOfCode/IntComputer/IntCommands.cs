@@ -52,52 +52,36 @@ namespace AdventOfCode
         }
         private long JumpIfTrue()
         {
-            if (computer.Parameter1 != 0)
-            {
-                return computer.Parameter2;
-            }
-
-            return computer.PC + 3;
+            return (computer.Parameter1 != 0)
+                ? computer.Parameter2
+                : computer.PC + 3;
         }
         private long JumpIfFalse()
         {
-            if (computer.Parameter1 == 0)
-            {
-                return computer.Parameter2;
-            }
-
-            return computer.PC + 3;
+            return (computer.Parameter1 == 0)
+                ? computer.Parameter2
+                : computer.PC + 3;
         }
 
         private long Store1IfLessThan()
         {
-            if (computer.Parameter1 < computer.Parameter2)
-            {
-                computer.Parameter3 = 1;
-            }
-            else
-            {
-                computer.Parameter3 = 0;
-            }
+            computer.Parameter3 = (computer.Parameter1 < computer.Parameter2)
+                ? 1
+                : 0;
 
             return computer.PC + 4;
         }
         private long Store1IfEqual()
         {
-            if (computer.Parameter1 == computer.Parameter2)
-            {
-                computer.Parameter3 = 1;
-            }
-            else
-            {
-                computer.Parameter3 = 0;
-            }
+            computer.Parameter3 = (computer.Parameter1 == computer.Parameter2)
+                ? 1
+                : 0;
 
             return computer.PC + 4;
         }
         private long AdjustRelativeBase()
         {
-            computer.RelativeBase = computer.Parameter1;
+            computer.RelativeBase += computer.Parameter1;
             return computer.PC + 2;
         }
     }

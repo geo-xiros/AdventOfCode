@@ -78,7 +78,7 @@ namespace AdventOfCode
         #region Initialize wires
         private void LoadWires()
         {
-            using (var file = File.OpenRead("..\\..\\input3.txt"))
+            using (var file = File.OpenRead("..\\..\\inputs\\input3.txt"))
             {
                 using (var reader = new StreamReader(file))
                 {

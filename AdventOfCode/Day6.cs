@@ -13,8 +13,10 @@ namespace AdventOfCode
         public Day6()
         {
 
-            var orbits = ReadFile();// "COM)B,K)L,C)D,B)C,D)E,E)F,B)G,G)H,D)I,E)J,J)K,K)YOU,I)SAN".Split(',').AsEnumerable();
+            var orbits = ReadFile();
             _answer1 = GetTotalOrbits(orbits);
+            // TODO:
+            _answer2 = 0;
 
         }
         private long GetTotalOrbits(IEnumerable<string> orbits)
@@ -46,7 +48,7 @@ namespace AdventOfCode
         }
         private IEnumerable<string> ReadFile()
         {
-            using (var file = File.OpenRead("..\\..\\input6.txt"))
+            using (var file = File.OpenRead("..\\..\\inputs\\input6.txt"))
             {
                 using (var reader = new StreamReader(file))
                 {

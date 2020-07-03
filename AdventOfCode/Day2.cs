@@ -39,7 +39,7 @@ namespace AdventOfCode
         private IEnumerable<long> LoadFile()
         {
             return File
-                .ReadAllText("..\\..\\input2.txt")
+                .ReadAllText("..\\..\\inputs\\input2.txt")
                 .Split(',')
                 .Select(long.Parse);
         }

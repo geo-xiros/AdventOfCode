@@ -11,7 +11,7 @@ namespace AdventOfCode
         private string _answer2;
         public Day8()
         {
-            var image = File.ReadAllText("..\\..\\input8.txt");
+            var image = File.ReadAllText("..\\..\\inputs\\input8.txt");
 
             _answer1 = ImageLayers(image, 25, 6)
                .OrderBy(layer => CountOf(layer, '0'))

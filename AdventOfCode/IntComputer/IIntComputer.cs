@@ -6,12 +6,12 @@ namespace AdventOfCode
 {
     public interface IIntComputer
     {
-        long RelativeBase { get; set; }
         long Parameter1 { get; set; }
         long Parameter2 { get; set; }
         long Parameter3 { get; set; }
+        long RelativeBase { get; set; }
         long PC { get; }
-        IEnumerator<long> Input { get; set; }
-        Action<long> Output { get; set; }
+        IEnumerator<long> Input { get; }
+        Action<long> Output { get; }
     }
 }

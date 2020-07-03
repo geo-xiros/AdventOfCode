@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Day7.cs" />
+    <Compile Include="Day9.cs" />
     <Compile Include="IntComputer\IIntComputer.cs" />
     <Compile Include="IntComputer\IntCommands.cs" />
     <Compile Include="IntComputer\IntComputer.cs" />
@@ -64,14 +65,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="input1.txt" />
-    <Content Include="input2.txt" />
-    <Content Include="input3.txt" />
-    <Content Include="input5.txt" />
-    <Content Include="input6.txt" />
-    <Content Include="input7.txt" />
-    <Content Include="input8.txt" />
-    <Content Include="input9.txt" />
+    <Content Include="Inputs\input1.txt" />
+    <Content Include="Inputs\input2.txt" />
+    <Content Include="Inputs\input3.txt" />
+    <Content Include="Inputs\input5.txt" />
+    <Content Include="Inputs\input6.txt" />
+    <Content Include="Inputs\input7.txt" />
+    <Content Include="Inputs\input8.txt" />
+    <Content Include="Inputs\input9.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

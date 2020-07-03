@@ -11,7 +11,7 @@ namespace AdventOfCode
 
         public Day1()
         {
-            var fuelsRequiredByModule = FileLines("..\\..\\input1.txt")
+            var fuelsRequiredByModule = FileLines("..\\..\\inputs\\input1.txt")
                 .Select(mass => FuelRequired(long.Parse(mass)));
 
             _answer1 = fuelsRequiredByModule

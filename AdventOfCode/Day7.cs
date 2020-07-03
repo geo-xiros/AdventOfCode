@@ -9,10 +9,15 @@ namespace AdventOfCode
 {
     public class Day7
     {
-        public Day7()
+        private long _answer1;
+        private long _answer2;
+        
+        public Day7() { }
+
+        public async Task Run()
         {
-            HighestSignalSentToTheThrusters(new long[] { 0, 1, 2, 3, 4 }).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer A:{t.Result}"));
-            HighestSignalSentToTheThrusters(new long[] { 5, 6, 7, 8, 9 }).ContinueWith(t => Console.WriteLine($"{this.GetType().Name} => Answer B:{t.Result}"));
+            _answer1 = await HighestSignalSentToTheThrusters(new long[] { 0, 1, 2, 3, 4 });
+            _answer2 = await HighestSignalSentToTheThrusters(new long[] { 5, 6, 7, 8, 9 });
         }
 
         private async Task<long> HighestSignalSentToTheThrusters(long[] phaseSettings)
@@ -66,9 +71,13 @@ namespace AdventOfCode
         private IEnumerable<long> LoadFile()
         {
             return File
-                .ReadAllText("..\\..\\input7.txt")
+                .ReadAllText("..\\..\\inputs\\input7.txt")
                 .Split(',')
                 .Select(long.Parse);
+        }
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
         }
 
         private class Permutations<T>

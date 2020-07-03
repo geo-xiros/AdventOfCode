@@ -10,54 +10,22 @@ namespace AdventOfCode
 
     public class IntComputer : IIntComputer
     {
-        public IEnumerator<long> Input { get; set; }
-        public Action<long> Output { get; set; }
-        public long PC { get; private set; }
+        private IntMemory memory;
+        private IntCommands commands;
         private long Command => memory[PC] % 100;
+
+        public IEnumerator<long> Input { get; private set; }
+        public Action<long> Output { get; private set; }
+        public long PC { get; private set; }
         public long MemoryZeroAddress => memory[0];
         public long RelativeBase { get; set; }
-
-        public IntMemory memory;
-        private IntCommands commands;
-
-        public IntComputer()
-        {
-            commands = new IntCommands(this);
-        }
-
-        #region Run Program
-        public IntComputer Run()
-        {
-            PC = 0;
-
-            while (true)
-            {
-                var command = Command;
-                if (command == 99)
-                {
-                    break;
-                }
-
-                PC = commands.Run(command);
-            }
-
-            return this;
-        }
-
         public long Parameter1 { get => memory[GetParameter(1)]; set => memory[GetParameter(1)] = value; }
         public long Parameter2 { get => memory[GetParameter(2)]; set => memory[GetParameter(2)] = value; }
         public long Parameter3 { get => memory[GetParameter(3)]; set => memory[GetParameter(3)] = value; }
 
-        private long GetParameter(int i)
+        public IntComputer()
         {
-            var positionMode = memory[PC] / (long)Math.Pow(10, i + 1) % 10;
-            var relativeBase = positionMode == 2
-                ? RelativeBase
-                : 0;
-
-            return positionMode == 1
-                ? PC + i
-                : memory[PC + i] + relativeBase;
+            commands = new IntCommands(this);
         }
 
         public IntComputer Using(long noun, long verb)
@@ -84,6 +52,37 @@ namespace AdventOfCode
             memory = new IntMemory(loadProgram().ToArray());
             return this;
         }
-        #endregion
+
+        public IntComputer Run()
+        {
+            PC = 0;
+            RelativeBase = 0;
+
+            while (true)
+            {
+                var command = Command;
+                if (command == 99)
+                {
+                    break;
+                }
+
+                PC = commands.Run(command);
+            }
+
+            return this;
+        }
+
+        private long GetParameter(int i)
+        {
+            var positionMode = memory[PC] / (long)Math.Pow(10, i + 1) % 10;
+
+            var relativeBase = positionMode == 2
+                ? RelativeBase
+                : 0;
+
+            return positionMode == 1
+                ? PC + i
+                : memory[PC + i] + relativeBase;
+        }
     }
 }

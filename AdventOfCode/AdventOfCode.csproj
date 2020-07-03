@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Day11.cs" />
     <Compile Include="Day7.cs" />
     <Compile Include="Day9.cs" />
+    <Compile Include="PaintingRobot\PanelPosition.cs" />
     <Compile Include="IntComputer\IIntComputer.cs" />
     <Compile Include="IntComputer\IntCommands.cs" />
     <Compile Include="IntComputer\IntComputer.cs" />
@@ -57,6 +59,7 @@
     <Compile Include="Day6.cs" />
     <Compile Include="Day8.cs" />
     <Compile Include="IntComputer\IntMemory.cs" />
+    <Compile Include="PaintingRobot\PaintingRobot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -66,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Inputs\input1.txt" />
+    <Content Include="Inputs\input11.txt" />
     <Content Include="Inputs\input2.txt" />
     <Content Include="Inputs\input3.txt" />
     <Content Include="Inputs\input5.txt" />

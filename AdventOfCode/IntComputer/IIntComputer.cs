@@ -10,9 +10,8 @@ namespace AdventOfCode
         long Parameter1 { get; set; }
         long Parameter2 { get; set; }
         long Parameter3 { get; set; }
-        long pc { get; }
-        Func<long> Input { get; set; }
+        long PC { get; }
+        IEnumerator<long> Input { get; set; }
         Action<long> Output { get; set; }
-        long? PhaseSetting { get; set; }
     }
 }

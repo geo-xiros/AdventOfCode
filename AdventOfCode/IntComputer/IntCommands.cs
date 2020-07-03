@@ -29,30 +29,26 @@ namespace AdventOfCode
         private long AddTwoNumbers()
         {
             computer.Parameter3 = computer.Parameter1 + computer.Parameter2;
-            return computer.pc + 4;
+            return computer.PC + 4;
         }
         private long MultiplyTwoNumbers()
         {
             computer.Parameter3 = computer.Parameter1 * computer.Parameter2;
-            return computer.pc + 4;
+            return computer.PC + 4;
         }
         private long GetInputValue()
         {
-            if (computer.PhaseSetting.HasValue)
+            if (computer.Input.MoveNext())
             {
-                computer.Parameter1 = computer.PhaseSetting.Value;
-                computer.PhaseSetting = null;
+                computer.Parameter1 = computer.Input.Current;
             }
-            else
-            {
-                computer.Parameter1 = computer.Input();
-            }
-            return computer.pc + 2;
+
+            return computer.PC + 2;
         }
         private long GetOutputValue()
         {
             computer.Output(computer.Parameter1);
-            return computer.pc + 2;
+            return computer.PC + 2;
         }
         private long JumpIfTrue()
         {
@@ -61,7 +57,7 @@ namespace AdventOfCode
                 return computer.Parameter2;
             }
 
-            return computer.pc + 3;
+            return computer.PC + 3;
         }
         private long JumpIfFalse()
         {
@@ -70,7 +66,7 @@ namespace AdventOfCode
                 return computer.Parameter2;
             }
 
-            return computer.pc + 3;
+            return computer.PC + 3;
         }
 
         private long Store1IfLessThan()
@@ -84,7 +80,7 @@ namespace AdventOfCode
                 computer.Parameter3 = 0;
             }
 
-            return computer.pc + 4;
+            return computer.PC + 4;
         }
         private long Store1IfEqual()
         {
@@ -97,12 +93,12 @@ namespace AdventOfCode
                 computer.Parameter3 = 0;
             }
 
-            return computer.pc + 4;
+            return computer.PC + 4;
         }
         private long AdjustRelativeBase()
         {
             computer.RelativeBase = computer.Parameter1;
-            return computer.pc + 2;
+            return computer.PC + 2;
         }
     }
 }

@@ -66,10 +66,18 @@ namespace AdventOfCode
             => Task.Run(()
                 => new IntComputer()
                     .LoadProgram(LoadFile)
-                    .SetInput(() => input.Take())
+                    .SetInput(InputEnumerator(phase, input))
                     .SetOutput((o) => output.Add(o))
-                    .SetPhase(phase)
                     .Run());
+
+        private IEnumerator<long> InputEnumerator(long phase, BlockingCollection<long> input)
+        {
+            yield return phase;
+            while (true)
+            {
+                yield return input.Take();
+            }
+        }
 
         private IEnumerable<long> LoadFile()
         {

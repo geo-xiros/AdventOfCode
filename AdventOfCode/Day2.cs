@@ -16,6 +16,7 @@ namespace AdventOfCode
             _answer2 = FindVerbAndNounForOutput(computer, 19690720);
 
         }
+
         private int FindVerbAndNounForOutput(IntComputer computer, int output)
         {
             for (var noun = 0; noun < 100; noun++)

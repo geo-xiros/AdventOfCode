@@ -10,10 +10,10 @@ namespace AdventOfCode
 
     public class IntComputer : IIntComputer
     {
-        public Func<long> Input { get; set; }
+        public IEnumerator<long> Input { get; set; }
         public Action<long> Output { get; set; }
-        public long pc { get; private set; }
-        private long Command => memory[pc] % 100;
+        public long PC { get; private set; }
+        private long Command => memory[PC] % 100;
         public long MemoryZeroAddress => memory[0];
         public long RelativeBase { get; set; }
 
@@ -28,7 +28,7 @@ namespace AdventOfCode
         #region Run Program
         public IntComputer Run()
         {
-            pc = 0;
+            PC = 0;
 
             while (true)
             {
@@ -38,7 +38,7 @@ namespace AdventOfCode
                     break;
                 }
 
-                pc = commands.Run(command);
+                PC = commands.Run(command);
             }
 
             return this;
@@ -47,18 +47,17 @@ namespace AdventOfCode
         public long Parameter1 { get => memory[GetParameter(1)]; set => memory[GetParameter(1)] = value; }
         public long Parameter2 { get => memory[GetParameter(2)]; set => memory[GetParameter(2)] = value; }
         public long Parameter3 { get => memory[GetParameter(3)]; set => memory[GetParameter(3)] = value; }
-        public long? PhaseSetting { get; set; }
 
         private long GetParameter(int i)
         {
-            var positionMode = memory[pc] / (long)Math.Pow(10, i + 1) % 10;
+            var positionMode = memory[PC] / (long)Math.Pow(10, i + 1) % 10;
             var relativeBase = positionMode == 2
                 ? RelativeBase
                 : 0;
 
             return positionMode == 1
-                ? pc + i
-                : memory[pc + i] + relativeBase;
+                ? PC + i
+                : memory[PC + i] + relativeBase;
         }
 
         public IntComputer Using(long noun, long verb)
@@ -74,7 +73,7 @@ namespace AdventOfCode
             return this;
         }
 
-        public IntComputer SetInput(Func<long> input)
+        public IntComputer SetInput(IEnumerator<long> input)
         {
             Input = input;
             return this;
@@ -83,12 +82,6 @@ namespace AdventOfCode
         public IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram)
         {
             memory = new IntMemory(loadProgram().ToArray());
-            return this;
-        }
-
-        internal IntComputer SetPhase(long phaseSetting)
-        {
-            PhaseSetting = phaseSetting;
             return this;
         }
         #endregion

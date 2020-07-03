@@ -28,6 +28,12 @@ namespace AdventOfCode
             commands = new IntCommands(this);
         }
 
+        public IntComputer SetQuarters(long quarters)
+        {
+            memory[0] = quarters;
+            return this;
+        }
+
         public IntComputer Using(long noun, long verb)
         {
             memory[1] = noun;

@@ -11,7 +11,7 @@ namespace AdventOfCode
         long Parameter3 { get; set; }
         long RelativeBase { get; set; }
         long PC { get; }
-        IEnumerator<long> Input { get; }
+        Func<long> Input { get; }
         Action<long> Output { get; }
     }
 }

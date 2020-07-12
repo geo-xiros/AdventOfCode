@@ -11,8 +11,8 @@ namespace AdventOfCode
 
         public Day1()
         {
-            var fuelsRequiredByModule = FileLines("..\\..\\inputs\\input1.txt")
-                .Select(mass => FuelRequired(long.Parse(mass)));
+            var fuelsRequiredByModule = FileUtils.LoadDataLines(1)
+                .Select(mass => FuelRequired(mass));
 
             _answer1 = fuelsRequiredByModule
                 .Sum();
@@ -38,19 +38,7 @@ namespace AdventOfCode
             return totalFuels;
         }
 
-        public IEnumerable<string> FileLines(string filename)
-        {
-            using (var file = File.OpenRead(filename))
-            {
-                using (var reader = new StreamReader(file))
-                {
-                    while (!reader.EndOfStream)
-                    {
-                        yield return reader.ReadLine();
-                    }
-                }
-            }
-        }
+        
 
         public override string ToString()
             => $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";

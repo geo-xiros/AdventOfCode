@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode
 {
@@ -38,10 +39,7 @@ namespace AdventOfCode
         }
         private long GetInputValue()
         {
-            if (computer.Input.MoveNext())
-            {
-                computer.Parameter1 = computer.Input.Current;
-            }
+            computer.Parameter1 = computer.Input();
 
             return computer.PC + 2;
         }

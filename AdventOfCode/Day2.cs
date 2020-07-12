@@ -12,7 +12,7 @@ namespace AdventOfCode
         {
             var computer = new IntComputer();
 
-            _answer1 = computer.LoadProgram(LoadFile).Using(12, 2).Run().MemoryZeroAddress;
+            _answer1 = computer.LoadProgram(FileUtils.LoadDataFor(2)).Using(12, 2).Run().MemoryZeroAddress;
             _answer2 = FindVerbAndNounForOutput(computer, 19690720);
 
         }
@@ -24,7 +24,7 @@ namespace AdventOfCode
                 for (var verb = 0; verb < 100; verb++)
                 {
                     if (computer
-                        .LoadProgram(LoadFile)
+                        .LoadProgram(FileUtils.LoadDataFor(2))
                         .Using(noun, verb)
                         .Run()
                         .MemoryZeroAddress == output)
@@ -35,13 +35,6 @@ namespace AdventOfCode
             }
 
             return 0;
-        }
-        private IEnumerable<long> LoadFile()
-        {
-            return File
-                .ReadAllText("..\\..\\inputs\\input2.txt")
-                .Split(',')
-                .Select(long.Parse);
         }
 
         public override string ToString()

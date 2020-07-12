@@ -7,7 +7,7 @@ using System;
 
 namespace AdventOfCode
 {
-    public class Day7
+    public partial class Day7
     {
         private long _answer1;
         private long _answer2;
@@ -38,6 +38,12 @@ namespace AdventOfCode
             var outputD = new BlockingCollection<long>();
             var outputE = new BlockingCollection<long>();
 
+            
+            outputA.Add(phaseSettings[1]);
+            outputB.Add(phaseSettings[2]);
+            outputC.Add(phaseSettings[3]);
+            outputD.Add(phaseSettings[4]);
+            outputE.Add(phaseSettings[0]);
             outputE.Add(0);
 
             var A = RunComputerWithWiredIO(phaseSettings[0], outputE, outputA);
@@ -54,58 +60,14 @@ namespace AdventOfCode
         private Task RunComputerWithWiredIO(long phase, BlockingCollection<long> input, BlockingCollection<long> output)
             => Task.Run(()
                 => new IntComputer()
-                    .LoadProgram(LoadFile)
-                    .SetInput(InputEnumerator(phase, input))
+                    .LoadProgram(FileUtils.LoadDataFor(7))
+                    .SetInput(() => input.Take())//InputEnumerator(phase, input))
                     .SetOutput((o) => output.Add(o))
                     .Run());
 
-        private IEnumerator<long> InputEnumerator(long phase, BlockingCollection<long> input)
-        {
-            yield return phase;
-            while (true)
-            {
-                yield return input.Take();
-            }
-        }
-
-        private IEnumerable<long> LoadFile()
-        {
-            return File
-                .ReadAllText("..\\..\\inputs\\input7.txt")
-                .Split(',')
-                .Select(long.Parse);
-        }
         public override string ToString()
         {
             return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";
-        }
-
-        private class Permutations<T>
-        {
-            public static System.Collections.Generic.IEnumerable<T[]> AllFor(T[] array)
-            {
-                if (array == null || array.Length == 0)
-                {
-                    yield return new T[0];
-                }
-                else
-                {
-                    for (int pick = 0; pick < array.Length; ++pick)
-                    {
-                        T item = array[pick];
-                        int i = -1;
-                        T[] rest = System.Array.FindAll<T>(array, delegate (T p) { return ++i != pick; });
-                        foreach (T[] restPermuted in AllFor(rest))
-                        {
-                            i = -1;
-                            yield return System.Array.ConvertAll<T, T>(array, (T p) =>
-                            {
-                                return ++i == 0 ? item : restPermuted[i - 1];
-                            });
-                        }
-                    }
-                }
-            }
         }
     }
 }

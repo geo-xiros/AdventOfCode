@@ -14,7 +14,7 @@ namespace AdventOfCode
         private IntCommands commands;
         private long Command => memory[PC] % 100;
 
-        public IEnumerator<long> Input { get; private set; }
+        public Func<long> Input { get; private set; }
         public Action<long> Output { get; private set; }
         public long PC { get; private set; }
         public long MemoryZeroAddress => memory[0];
@@ -28,7 +28,7 @@ namespace AdventOfCode
             commands = new IntCommands(this);
         }
 
-        public IntComputer SetQuarters(long quarters)
+        public IntComputer SetMemory(long quarters)
         {
             memory[0] = quarters;
             return this;
@@ -47,15 +47,15 @@ namespace AdventOfCode
             return this;
         }
 
-        public IntComputer SetInput(IEnumerator<long> input)
+        public IntComputer SetInput(Func<long> input)
         {
             Input = input;
             return this;
         }
 
-        public IntComputer LoadProgram(Func<IEnumerable<long>> loadProgram)
+        public IntComputer LoadProgram(IEnumerable<long> loadProgram)
         {
-            memory = new IntMemory(loadProgram().ToArray());
+            memory = new IntMemory(loadProgram.ToArray());
             return this;
         }
 

@@ -17,8 +17,8 @@ namespace AdventOfCode
         {
             panelsGridPaintStatus.Add(currentPosition, startingPointColor);
 
-            computer.LoadProgram(LoadFile)
-                .SetInput(ColorInput())
+            computer.LoadProgram(FileUtils.LoadDataFor(11))
+                .SetInput(ColorInput)
                 .SetOutput(Paint)
                 .Run();
         }
@@ -35,14 +35,6 @@ namespace AdventOfCode
             }
 
             Console.SetCursorPosition(0, 0);
-        }
-
-        private IEnumerable<long> LoadFile()
-        {
-            return File
-                .ReadAllText("..\\..\\inputs\\input11.txt")
-                .Split(',')
-                .Select(long.Parse);
         }
 
         private void Paint(long output)
@@ -68,19 +60,11 @@ namespace AdventOfCode
             computer.SetOutput(Paint);
         }
 
-        private IEnumerator<long> ColorInput()
+        private long ColorInput()
         {
-            while (true)
-            {
-                if (panelsGridPaintStatus.TryGetValue(currentPosition, out long painted))
-                {
-                    yield return painted;
-                }
-                else
-                {
-                    yield return 0;
-                }
-            }
+            return (panelsGridPaintStatus.TryGetValue(currentPosition, out long painted))
+                ? painted
+                : 0;
         }
     }
 }

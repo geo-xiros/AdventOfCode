@@ -15,13 +15,12 @@ namespace AdventOfCode
                 .Select(long.Parse);
         }
 
-        public static IEnumerable<long> LoadDataLines(int day)
+        public static IEnumerable<string> LoadDataLines(int day)
         {
             return File
                 .ReadAllText($"..\\..\\inputs\\input{day}.txt")
                 .Split('\n')
-                .Where(l => l.Length != 0)
-                .Select(long.Parse);
+                .Where(l => l.Length != 0);
         }
     }
 }

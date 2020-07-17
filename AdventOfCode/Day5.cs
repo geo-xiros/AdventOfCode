@@ -14,8 +14,15 @@ namespace AdventOfCode
         {
             var computer = new IntComputer();
 
-            computer.LoadProgram(FileUtils.LoadDataFor(5)).SetInput(()=>1).SetOutput((o) => _answer1 = o).Run();
-            computer.LoadProgram(FileUtils.LoadDataFor(5)).SetInput(()=>5).SetOutput((o) => _answer2 = o).Run();
+            computer.LoadProgram(FileUtils.LoadDataFor(5))
+                .SetInput(() => 1)
+                .SetOutput((o) => _answer1 = o)
+                .Run();
+
+            computer.LoadProgram(FileUtils.LoadDataFor(5))
+                .SetInput(() => 5)
+                .SetOutput((o) => _answer2 = o)
+                .Run();
         }
 
 

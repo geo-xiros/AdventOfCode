@@ -30,7 +30,5 @@ namespace AdventOfCode
 
             set => memory[address] = value;
         }
-
-        public long Length => memory.Keys.Max();
     }
 }

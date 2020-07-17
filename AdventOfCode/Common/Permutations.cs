@@ -1,10 +1,12 @@
-﻿namespace AdventOfCode
+﻿using System.Collections.Generic;
+
+namespace AdventOfCode
 {
     public partial class Day7
     {
-        private class Permutations<T>
+        private static class Permutations<T>
         {
-            public static System.Collections.Generic.IEnumerable<T[]> AllFor(T[] array)
+            public static IEnumerable<T[]> AllFor(T[] array)
             {
                 if (array == null || array.Length == 0)
                 {

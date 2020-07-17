@@ -12,6 +12,7 @@ namespace AdventOfCode
         public Day1()
         {
             var fuelsRequiredByModule = FileUtils.LoadDataLines(1)
+                .Select(long.Parse)
                 .Select(mass => FuelRequired(mass));
 
             _answer1 = fuelsRequiredByModule

@@ -13,8 +13,7 @@ namespace AdventOfCode
         public Day6()
         {
 
-            var orbits = ReadFile();
-            _answer1 = GetTotalOrbits(orbits);
+            _answer1 = GetTotalOrbits(FileUtils.LoadDataLines(6));
             // TODO:
             _answer2 = 0;
 
@@ -46,19 +45,7 @@ namespace AdventOfCode
 
             return _orbitsMap.Values.Select(o => o.TotalOrbits).Sum();
         }
-        private IEnumerable<string> ReadFile()
-        {
-            using (var file = File.OpenRead("..\\..\\inputs\\input6.txt"))
-            {
-                using (var reader = new StreamReader(file))
-                {
-                    while (!reader.EndOfStream)
-                    {
-                        yield return reader.ReadLine();
-                    }
-                }
-            }
-        }
+
         public override string ToString()
         {
             return $"{this.GetType().Name} => Answer A:{_answer1}, Answer B:{_answer2}";

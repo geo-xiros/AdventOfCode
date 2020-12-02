@@ -19,7 +19,7 @@ namespace AdventOfCode
     {
         static void Main(string[] args)
         {
-           // Console.WriteLine(new Day1());
+            //Console.WriteLine(new Day1());
             //Console.WriteLine(new Day2());
             //Console.WriteLine(new Day3());
             //Console.WriteLine(new Day4());
@@ -27,12 +27,12 @@ namespace AdventOfCode
             //var day7 = new Day7();
             //day7.Run().ContinueWith(t => Console.WriteLine(day7));
 
-            Console.WriteLine(new Day6());
+            //Console.WriteLine(new Day6());
             //Console.WriteLine(new Day8());
-            //Console.WriteLine(new Day9());
+            Console.WriteLine(new Day9());
 
-            //Console.WriteLine(new Day11());
-            //Console.WriteLine(new Day13());
+            Console.WriteLine(new Day11());
+            Console.WriteLine(new Day13());
 
             //var s = new Scaffold();
             ////s.Print();

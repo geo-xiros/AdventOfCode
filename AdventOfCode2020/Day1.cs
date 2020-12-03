@@ -9,7 +9,7 @@ namespace AdventOfCode2020
 
         public Day1() : base(1)
         {
-            expenseReport = input.Select(l => int.Parse(l)).ToArray();
+            expenseReport = input.Select(int.Parse).ToArray();
         }
 
         protected override int GetAnswer1()
@@ -37,7 +37,7 @@ namespace AdventOfCode2020
                             return expenseReport[i] * expenseReport[j] * expenseReport[k];
                         }
                     }
-            
+
             return 0;
         }
     }

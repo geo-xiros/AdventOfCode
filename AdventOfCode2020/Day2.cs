@@ -6,45 +6,47 @@ namespace AdventOfCode2020
 {
     public class Day2 : Day<int>
     {
-        private IEnumerable<(string Policy, string Password)> passwordsInfo;
+        private record PasswordPolicy(int Min, int Max, char Letter);
+        private record PasswordInfo(PasswordPolicy PasswordPolicy, string Password);
+        
+        private IEnumerable<PasswordInfo> passwordsInfo;
 
         public Day2() : base(2)
         {
             passwordsInfo = input
                 .Select(s => s.Split(':'))
-                .Select(pp => (pp[0], pp[1].Trim()));
+                .Select(pp => new PasswordInfo(GetPolicyFrom(pp[0]), pp[1].Trim()));
         }
 
         protected override int GetAnswer1()
-            => passwordsInfo.Where(pi => IsValid1(GetPolicyFrom(pi.Policy), pi.Password)).Count();
+            => passwordsInfo.Where(IsValid1).Count();
 
-        protected override int GetAnswer2() 
-            => passwordsInfo.Where(pi => IsValid2(GetPolicyFrom(pi.Policy), pi.Password)).Count();
+        protected override int GetAnswer2()
+            => passwordsInfo.Where(IsValid2).Count();
 
-        private bool IsValid1((int Min, int Max, char Letter) policy, string password)
+        private bool IsValid1(PasswordInfo pi)
         {
-            var letterCount = password.Count(c => c == policy.Letter);
+            var letterCount = pi.Password.Count(c => c == pi.PasswordPolicy.Letter);
 
-            return letterCount >= policy.Min
-                && letterCount <= policy.Max;
+            return letterCount >= pi.PasswordPolicy.Min
+                && letterCount <= pi.PasswordPolicy.Max;
         }
 
-        private bool IsValid2((int Min, int Max, char Letter) policy, string password)
+        private bool IsValid2(PasswordInfo pi)
         {
-            var foundAtMinPosition = password[policy.Min - 1] == policy.Letter;
-            var foundAtMaxPosition = password[policy.Max - 1] == policy.Letter;
+            var foundAtMinPosition = pi.Password[pi.PasswordPolicy.Min - 1] == pi.PasswordPolicy.Letter;
+            var foundAtMaxPosition = pi.Password[pi.PasswordPolicy.Max - 1] == pi.PasswordPolicy.Letter;
 
-            return (foundAtMinPosition || foundAtMaxPosition) &&
-                !(foundAtMinPosition && foundAtMaxPosition);
+            return foundAtMinPosition ^ foundAtMaxPosition;
         }
 
-        private (int Min, int Max, char Letter) GetPolicyFrom(string policy)
+        private PasswordPolicy GetPolicyFrom(string policy)
         {
             var minMaxLetter = policy.Split(' ');
             var letter = minMaxLetter[1];
             var minMax = minMaxLetter[0].Split('-');
 
-            return (int.Parse(minMax[0]), int.Parse(minMax[1]), letter[0]);
+            return new PasswordPolicy(int.Parse(minMax[0]), int.Parse(minMax[1]), letter[0]);
         }
 
     }

@@ -7,7 +7,7 @@ namespace AdventOfCode2020
     {
         private int day;
 
-        protected IEnumerable<string> input;
+        protected string[] input;
 
         public Day(int day)
         {

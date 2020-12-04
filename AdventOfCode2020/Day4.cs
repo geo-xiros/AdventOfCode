@@ -34,24 +34,23 @@ namespace AdventOfCode2020
                             => new PassportField(
                                 field.Split(':')[0],
                                 field.Split(':')[1])))
-                .Select(pf => new Passport(pf))
-                .ToList();
+                .Select(pf => new Passport(pf));
         }
 
         protected override long GetAnswer1()
-            => passports.Where(p => HasValidFileds1(p.Fields)).Count();
+            => passports.Where(p => HasValidFields1(p.Fields)).Count();
 
         protected override long GetAnswer2()
-            => passports.Where(p => HasValidFileds2(p.Fields)).Count();
+            => passports.Where(p => HasValidFields2(p.Fields)).Count();
 
         #region Validation methods
 
-        private bool HasValidFileds1(IEnumerable<PassportField> fields)
+        private bool HasValidFields1(IEnumerable<PassportField> fields)
                 => fields.Count(f => !f.Field.Equals("cid")) == 7;
 
-        private bool HasValidFileds2(IEnumerable<PassportField> fields)
+        private bool HasValidFields2(IEnumerable<PassportField> fields)
         {
-            if (!HasValidFileds1(fields))
+            if (!HasValidFields1(fields))
             {
                 return false;
             }

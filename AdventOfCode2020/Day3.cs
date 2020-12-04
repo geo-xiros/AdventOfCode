@@ -19,7 +19,7 @@ namespace AdventOfCode2020
             var downs = new[] { 1, 1, 1, 1, 2 };
             var trees = rights.Zip(downs, (r, d) => Trees(r, d));
 
-            return trees.Aggregate(1L, (total, current) => total * current);
+            return trees.Aggregate((total, current) => total * current);
         }
 
         private long Trees(int right, int down)

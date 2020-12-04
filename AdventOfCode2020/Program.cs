@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace AdventOfCode2020
 {
@@ -6,11 +7,21 @@ namespace AdventOfCode2020
     {
         static void Main(string[] args)
         {
+            var dayType = typeof(IDay);
 
-            var d1 = new Day1(); Console.WriteLine(d1.Answer1); Console.WriteLine(d1.Answer2);
-            var d2 = new Day2(); Console.WriteLine(d2.Answer1); Console.WriteLine(d2.Answer2);
-            var d3 = new Day3(); Console.WriteLine(d3.Answer1); Console.WriteLine(d3.Answer2);
+            AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .Where(t => dayType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
+                .Select(t => (IDay)Activator.CreateInstance(t))
+                .ToList()
+                .ForEach(Solve);
+        }
 
+        private static void Solve(IDay day)
+        {
+            Console.WriteLine(day.Answer1);
+            Console.WriteLine(day.Answer2);
         }
     }
 }

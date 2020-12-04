@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AdventOfCode2020
 {
-    public abstract class Day<T>
+    public abstract class Day<T> : IDay
     {
         private int day;
 

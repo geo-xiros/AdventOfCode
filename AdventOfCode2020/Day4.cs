@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdventOfCode2020.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,51 +8,15 @@ namespace AdventOfCode2020
 {
     public class Day4 : Day<long>
     {
+        private Dictionary<string, Func<string, bool>> passportFieldsNamesValidation;
+
         private record PassportField(string Field, string Value);
-        private record Passport(List<PassportField> Fields);
+        private record Passport(IEnumerable<PassportField> Fields);
         private IEnumerable<Passport> passports;
 
         public Day4() : base(4)
         {
-            passports = input
-                .Aggregate((p, s)
-                    => string.IsNullOrEmpty(s)
-                        ? string.Join(',', p, s)
-                        : string.Join(' ', p, s))
-                .Split(',', StringSplitOptions.TrimEntries)
-                .Select(passportInfo
-                    => new Passport(passportInfo
-                            .Split(' ')
-                            .Select(kv
-                                => new PassportField(
-                                        kv.Split(':')[0],
-                                        kv.Split(':')[1]))
-                            .ToList()));
-        }
-
-        protected override long GetAnswer1()
-        {
-            return passports.Where(p => HasValidFileds1(p.Fields)).Count();
-        }
-
-        protected override long GetAnswer2()
-        {
-            return passports.Where(p => HasValidFileds2(p.Fields)).Count();
-        }
-
-        private bool HasValidFileds1(List<PassportField> fields)
-        {
-            return fields.Count(f => !f.Field.Equals("cid")) == 7;
-        }
-
-        private bool HasValidFileds2(List<PassportField> fields)
-        {
-            if (!HasValidFileds1(fields))
-            {
-                return false;
-            }
-
-            var passportFieldsNamesValidation = new Dictionary<string, Func<string, bool>>()
+            passportFieldsNamesValidation = new Dictionary<string, Func<string, bool>>()
             {
                 ["byr"] = IsValidBirthYear,
                 ["iyr"] = IsValidIssueYear,
@@ -62,12 +27,41 @@ namespace AdventOfCode2020
                 ["pid"] = IsValidPasswordId
             };
 
+            passports = input
+                .SplitByEmptyLines(passportLines
+                    => passportLines.SelectMany(passportFields => passportFields.Split(' '))
+                        .Select(field
+                            => new PassportField(
+                                field.Split(':')[0],
+                                field.Split(':')[1])))
+                .Select(pf => new Passport(pf))
+                .ToList();
+        }
+
+        protected override long GetAnswer1()
+            => passports.Where(p => HasValidFileds1(p.Fields)).Count();
+
+        protected override long GetAnswer2()
+            => passports.Where(p => HasValidFileds2(p.Fields)).Count();
+
+        #region Validation methods
+
+        private bool HasValidFileds1(IEnumerable<PassportField> fields)
+                => fields.Count(f => !f.Field.Equals("cid")) == 7;
+
+        private bool HasValidFileds2(IEnumerable<PassportField> fields)
+        {
+            if (!HasValidFileds1(fields))
+            {
+                return false;
+            }
+
             return passportFieldsNamesValidation
                 .Join(fields,
-                    pn => pn.Key,
+                    fnv => fnv.Key,
                     f => f.Field,
-                    (pn, f) => pn.Value(f.Value))
-                .All(v => v == true);
+                    (fnv, f) => fnv.Value(f.Value))
+                .All(v => v);
         }
 
         private bool IsValidPasswordId(string pid) => Regex.Match(pid, @"\b[0-9]{9}\b").Success;
@@ -109,7 +103,8 @@ namespace AdventOfCode2020
             return year >= 1920 && year <= 2002;
         }
 
-
+        #endregion
 
     }
+
 }

@@ -28,14 +28,19 @@ namespace AdventOfCode2020
             };
 
             passports = input
-                .SplitByEmptyLines(passportLines
-                    => passportLines.SelectMany(passportFields => passportFields.Split(' '))
-                        .Select(field
-                            => new PassportField(
-                                field.Split(':')[0],
-                                field.Split(':')[1])))
+                .SplitByEmptyLines(ConvertToPassportFields)
                 .Select(pf => new Passport(pf));
         }
+
+        private IEnumerable<PassportField> ConvertToPassportFields(IEnumerable<string> passportLines)
+            => passportLines
+                .SelectMany(passportFields => passportFields.Split(' '))
+                .Select(ConvertToPassportField);
+
+        private PassportField ConvertToPassportField(string field)
+            => new PassportField(
+                field.Split(':')[0],
+                field.Split(':')[1]);
 
         protected override long GetAnswer1()
             => passports.Where(p => HasValidFields1(p.Fields)).Count();

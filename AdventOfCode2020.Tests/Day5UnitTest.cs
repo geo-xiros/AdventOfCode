@@ -6,14 +6,6 @@ namespace AdventOfCode2020.Tests
     [TestClass]
     public class Day5UnitTest
     {
-        private BoardingPassHelper boardingPassHelper;
-
-        [TestInitialize]
-        public void Initialize()
-        {
-            boardingPassHelper = new BoardingPassHelper();
-        }
-
         [DataTestMethod]
         [DataRow("FBFBBFFRLR", 44, 5)]
         [DataRow("BFFFBBFRRR", 70, 7)]
@@ -21,7 +13,7 @@ namespace AdventOfCode2020.Tests
         [DataRow("BBFFBBFRLL", 102, 4)]
         public void ShoulReturnSeatRowAndColumnFromBoardingpass(string boardingPass, int expectedRow, int expectedColumn)
         {
-            var (actualRow, actualColumn) = boardingPassHelper.GetRowColumnFrom(boardingPass);
+            var (actualRow, actualColumn) = BoardingPassHelper.GetRowColumnFrom(boardingPass);
 
             Assert.AreEqual(expectedRow, actualRow);
             Assert.AreEqual(expectedColumn, actualColumn);
@@ -34,7 +26,7 @@ namespace AdventOfCode2020.Tests
         [DataRow("BBFFBBFRLL", 820)]
         public void ShoulReturnSeatIdFromBoardingpass(string boardingPass, int expectedSeatId)
         {
-            var actualSeatId = boardingPassHelper.GetSeatIdFrom(boardingPass);
+            var actualSeatId = BoardingPassHelper.GetSeatIdFrom(boardingPass);
 
             Assert.AreEqual(expectedSeatId, actualSeatId);
         }

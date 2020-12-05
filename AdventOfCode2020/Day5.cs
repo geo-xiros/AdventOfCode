@@ -10,8 +10,7 @@ namespace AdventOfCode2020
 
         public Day5() : base(5)
         {
-            var boardingPassHelper = new BoardingPassHelper();
-            passBoardsSeats = input.Select(bp => boardingPassHelper.GetSeatIdFrom(bp));
+            passBoardsSeats = input.Select(bp => BoardingPassHelper.GetSeatIdFrom(bp));
         }
 
         protected override int GetAnswer1()

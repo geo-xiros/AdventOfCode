@@ -32,6 +32,14 @@ namespace AdventOfCode2020
                 .Select(pf => new Passport(pf));
         }
 
+        protected override long GetAnswer1()
+            => passports.Where(AllFieldsAreValid1).Count();
+
+        protected override long GetAnswer2()
+            => passports.Where(AllFieldsAreValid2).Count();
+
+        #region Passport convertions
+
         private IEnumerable<PassportField> ConvertToPassportFields(IEnumerable<string> passportLines)
             => passportLines
                 .SelectMany(passportFields => passportFields.Split(' '))
@@ -42,26 +50,22 @@ namespace AdventOfCode2020
                 field.Split(':')[0],
                 field.Split(':')[1]);
 
-        protected override long GetAnswer1()
-            => passports.Where(p => HasValidFields1(p.Fields)).Count();
-
-        protected override long GetAnswer2()
-            => passports.Where(p => HasValidFields2(p.Fields)).Count();
+        #endregion
 
         #region Validation methods
 
-        private bool HasValidFields1(IEnumerable<PassportField> fields)
-                => fields.Count(f => !f.Field.Equals("cid")) == 7;
+        private bool AllFieldsAreValid1(Passport passport)
+            => passport.Fields.Count(f => !f.Field.Equals("cid")) == 7;
 
-        private bool HasValidFields2(IEnumerable<PassportField> fields)
+        private bool AllFieldsAreValid2(Passport passport)
         {
-            if (!HasValidFields1(fields))
+            if (!AllFieldsAreValid1(passport))
             {
                 return false;
             }
 
             return passportFieldsNamesValidation
-                .Join(fields,
+                .Join(passport.Fields,
                     fnv => fnv.Key,
                     f => f.Field,
                     (fnv, f) => fnv.Value(f.Value))

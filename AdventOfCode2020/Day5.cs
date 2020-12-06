@@ -21,7 +21,7 @@ namespace AdventOfCode2020
         protected override int GetAnswer2()
         {
             int seat = 0;
-            
+
             // works for now but i dont like it.
             passBoardsSeats
                 .OrderBy(s => s)
@@ -31,7 +31,7 @@ namespace AdventOfCode2020
                       {
                           seat = prev + 1;
                       }
-                   
+
                       return cur;
                   });
 

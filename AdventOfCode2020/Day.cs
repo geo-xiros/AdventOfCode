@@ -12,7 +12,18 @@ namespace AdventOfCode2020
         public Day(int day)
         {
             this.day = day;
-            input = File.ReadAllLines(@$"..\\..\\..\\input\input{day}.txt");
+            try
+            {
+                input = File.ReadAllLines(@$"..\\..\\..\\input\input{day}.txt");
+            }
+            catch (DirectoryNotFoundException exd)
+            {
+                System.Console.WriteLine(exd.Message);
+            }
+            catch (FileNotFoundException exf)
+            {
+                System.Console.WriteLine(exf.Message);
+            }
         }
 
         public string Answer1 => $"Day {day} Answer 1: {GetAnswer1()}";

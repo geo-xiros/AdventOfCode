@@ -29,17 +29,17 @@ namespace AdventOfCode2020
         public IEnumerable<char> GetYesAnswersForAnyone(IEnumerable<string> personAnswers)
         {
             return personAnswers
-                .SelectMany(s => s)
+                .SelectMany(answers => answers)
                 .Distinct();
         }
 
         public IEnumerable<char> GetYesAnswersForEveryone(IEnumerable<string> personAnswers)
         {
             return personAnswers
-                .SelectMany(s => s)
-                .GroupBy(s => s)
-                .Where(s => s.Count() == personAnswers.Count())
-                .Select(s => s.Key);
+                .SelectMany(answers => answers)
+                .GroupBy(answer => answer)
+                .Where(groupedAnswer => groupedAnswer.Count() == personAnswers.Count())
+                .Select(yesEveryoneGroupedAnswer => yesEveryoneGroupedAnswer.Key);
         }
 
 

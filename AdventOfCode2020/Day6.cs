@@ -13,27 +13,27 @@ namespace AdventOfCode2020
         protected override int GetAnswer1()
         {
             return input
-                .SplitByEmptyLines(GetYesAnswersForAnyone)
-                .SelectMany(s => s)
+                .SplitByEmptyLines(GetAffirmativeAnswersFromAnyone)
+                .SelectMany(answer => answer)
                 .Count();
         }
 
         protected override int GetAnswer2()
         {
             return input
-                .SplitByEmptyLines(GetYesAnswersForEveryone)
-                .SelectMany(s => s)
+                .SplitByEmptyLines(GetAffirmativeAnswersFromEveryone)
+                .SelectMany(answer => answer)
                 .Count();
         }
 
-        public IEnumerable<char> GetYesAnswersForAnyone(IEnumerable<string> personAnswers)
+        public IEnumerable<char> GetAffirmativeAnswersFromAnyone(IEnumerable<string> personAnswers)
         {
             return personAnswers
                 .SelectMany(answers => answers)
                 .Distinct();
         }
 
-        public IEnumerable<char> GetYesAnswersForEveryone(IEnumerable<string> personAnswers)
+        public IEnumerable<char> GetAffirmativeAnswersFromEveryone(IEnumerable<string> personAnswers)
         {
             return personAnswers
                 .SelectMany(answers => answers)

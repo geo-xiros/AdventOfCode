@@ -30,7 +30,7 @@ namespace AdventOfCode2020.Tests
         public void TestPart1()
         {
             var actualResult = input
-                .SplitByEmptyLines(day.GetYesAnswersForAnyone)
+                .SplitByEmptyLines(day.GetAffirmativeAnswersFromAnyone)
                 .SelectMany(s => s)
                 .Count();
 
@@ -41,7 +41,7 @@ namespace AdventOfCode2020.Tests
         public void TestPart2()
         {
             var actualResult = input
-                .SplitByEmptyLines(day.GetYesAnswersForEveryone)
+                .SplitByEmptyLines(day.GetAffirmativeAnswersFromEveryone)
                 .SelectMany(s => s)
                 .Count();
 

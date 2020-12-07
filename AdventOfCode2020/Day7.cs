@@ -60,9 +60,6 @@ namespace AdventOfCode2020
                 ColorCode = colorCode;
             }
 
-            private void Add(ContainedBag containedBag)
-                => containedBags.Add(containedBag);
-
             public bool CanContain(string colorCode)
                 => ColorCode.Equals(colorCode) ||
                     containedBags.Any(cb => cb.Bag.CanContain(colorCode));

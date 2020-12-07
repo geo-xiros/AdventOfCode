@@ -30,7 +30,7 @@ namespace AdventOfCode2020
         {
             for (int i = 0; i < expenseReport.Length; i++)
                 for (int j = i + 1; j < expenseReport.Length; j++)
-                    for (int k = i + 2; k < expenseReport.Length; k++)
+                    for (int k = j + 1; k < expenseReport.Length; k++)
                     {
                         if (expenseReport[i] + expenseReport[j] + expenseReport[k] == 2020)
                         {

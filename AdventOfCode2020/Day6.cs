@@ -26,19 +26,19 @@ namespace AdventOfCode2020
                 .Count();
         }
 
-        public IEnumerable<char> GetAffirmativeAnswersFromAnyone(IEnumerable<string> personAnswers)
+        public IEnumerable<char> GetAffirmativeAnswersFromAnyone(IEnumerable<string> groupPersonsAnswers)
         {
-            return personAnswers
+            return groupPersonsAnswers
                 .SelectMany(answers => answers)
                 .Distinct();
         }
 
-        public IEnumerable<char> GetAffirmativeAnswersFromEveryone(IEnumerable<string> personAnswers)
+        public IEnumerable<char> GetAffirmativeAnswersFromEveryone(IEnumerable<string> groupPersonsAnswers)
         {
-            return personAnswers
-                .SelectMany(answers => answers)
+            return groupPersonsAnswers
+                .SelectMany(PersonsAnswers => PersonsAnswers)
                 .GroupBy(answer => answer)
-                .Where(groupedAnswer => groupedAnswer.Count() == personAnswers.Count())
+                .Where(groupedAnswer => groupedAnswer.Count() == groupPersonsAnswers.Count())
                 .Select(yesEveryoneGroupedAnswer => yesEveryoneGroupedAnswer.Key);
         }
 

@@ -7,36 +7,42 @@ namespace AdventOfCode2020
 {
     public class Day7 : Day<int>
     {
-        private Dictionary<string, Bag> bags = new Dictionary<string, Bag>();
+        private List<Bag> bags;
         private record ContainedBag(Bag Bag, int Quantity);
 
         public Day7() : base(7)
         {
-            PrepareInput();
+            bags = PrepareInput();
         }
 
         protected override int GetAnswer1()
         {
-            return bags.Values
+            return bags
                 .Count(b => b.CanContain("shiny gold"))
                 - 1; // 'shiny gold bag' rule should not count
         }
 
         protected override int GetAnswer2()
         {
-            return bags["shiny gold"].Quantity;
+            return bags
+                .Where(b => b.ColorCode.Equals("shiny gold"))
+                .First()
+                .Quantity;
         }
 
-        private void PrepareInput()
+        private List<Bag> PrepareInput()
         {
-            bags = input
+            var bags = input
                 .Select(l => Bag.Create(l))
                 .ToDictionary(b => b.ColorCode);
 
             bags.Values
-                .Zip(input, (bag,line) => (bag,line))
+                .Zip(input, (bag, line) => (bag, line))
                 .ToList()
                 .ForEach(t => t.bag.SetContainedBags(t.line, bags));
+
+            return bags.Values
+                .ToList();
         }
 
         private class Bag
@@ -68,7 +74,7 @@ namespace AdventOfCode2020
                     .Select(m => new ContainedBag(bags[m.Groups["code"].Value], int.Parse(m.Groups["quantity"].Value)))
                     .ToList();
             }
-            
+
             public static Bag Create(string line)
             {
                 var colorCode = Regex.Match(line, @"(\w+\s\w+)\sbags\scontain").Groups[1].Value;

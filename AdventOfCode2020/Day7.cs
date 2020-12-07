@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -28,30 +29,14 @@ namespace AdventOfCode2020
 
         private void PrepareInput()
         {
-            input.ToList().ForEach(line =>
-            {
-                var bagRule = Regex.Match(line, @"(\w+\s\w+)\sbags\scontain").Groups[1].Value;
-                var bag = GetOrAdd(bagRule);
+            bags = input
+                .Select(l => Bag.Create(l))
+                .ToDictionary(b => b.ColorCode);
 
-                Regex
-                    .Matches(line, @"(?<quantity>[0-9]+)\s(?<code>\w+\s\w+)\sbags?")
-                    .Select(m => new ContainedBag(GetOrAdd(m.Groups["code"].Value), int.Parse(m.Groups["quantity"].Value)))
-                    .ToList()
-                    .ForEach(cb => bag.Add(cb));
-            });
-        }
-
-        private Bag GetOrAdd(string bagColorCode)
-        {
-            if (bags.TryGetValue(bagColorCode, out Bag bag))
-            {
-                return bag;
-            }
-
-            bag = new Bag(bagColorCode);
-            bags[bagColorCode] = bag;
-
-            return bag;
+            bags.Values
+                .Zip(input, (bag,line) => (bag,line))
+                .ToList()
+                .ForEach(t => t.bag.SetContainedBags(t.line, bags));
         }
 
         private class Bag
@@ -69,16 +54,28 @@ namespace AdventOfCode2020
                 ColorCode = colorCode;
             }
 
-            public void Add(ContainedBag containedBag)
-            {
-                containedBags.Add(containedBag);
-            }
+            private void Add(ContainedBag containedBag)
+                => containedBags.Add(containedBag);
 
             public bool CanContain(string colorCode)
-            {
-                return ColorCode.Equals(colorCode) ||
+                => ColorCode.Equals(colorCode) ||
                     containedBags.Any(cb => cb.Bag.CanContain(colorCode));
+
+            internal void SetContainedBags(string line, Dictionary<string, Bag> bags)
+            {
+                containedBags = Regex
+                    .Matches(line, @"(?<quantity>[0-9]+)\s(?<code>\w+\s\w+)\sbags?")
+                    .Select(m => new ContainedBag(bags[m.Groups["code"].Value], int.Parse(m.Groups["quantity"].Value)))
+                    .ToList();
             }
+            
+            public static Bag Create(string line)
+            {
+                var colorCode = Regex.Match(line, @"(\w+\s\w+)\sbags\scontain").Groups[1].Value;
+                return new Bag(colorCode);
+            }
+
         }
+
     }
 }

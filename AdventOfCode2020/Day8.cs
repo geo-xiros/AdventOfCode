@@ -8,13 +8,13 @@ namespace AdventOfCode2020
 {
     public class Day8 : Day<int>
     {
-        private List<Instruction> instructions;
+        private Instruction[] instructions;
 
         public Day8() : base(8)
         {
             instructions = input
                 .Select(l => Computer.Create(l))
-                .ToList();
+                .ToArray();
         }
 
         protected override int GetAnswer1()
@@ -52,7 +52,7 @@ namespace AdventOfCode2020
 
             public bool Terminated { get; set; }
 
-            public Computer Execute(List<Instruction> instructions, int indexToExecutePatchedInstruction = -1)
+            public Computer Execute(Instruction[] instructions, int indexToExecutePatchedInstruction = -1)
             {
                 var instr = instructions.ToIndexedDictionary();
                 var executedLines = new List<int>();
@@ -61,7 +61,7 @@ namespace AdventOfCode2020
                 Accumulator = 0;
                 Terminated = false;
 
-                while (pc < instructions.Count && !executedLines.Contains(pc))
+                while (pc < instructions.Length && !executedLines.Contains(pc))
                 {
                     var instruction = instr[pc];
                     executedLines.Add(pc);
@@ -77,7 +77,7 @@ namespace AdventOfCode2020
 
                 }
 
-                Terminated = (pc == instructions.Count);
+                Terminated = (pc == instructions.Length);
 
                 return this;
             }

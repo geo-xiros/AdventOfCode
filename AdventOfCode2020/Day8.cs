@@ -30,7 +30,6 @@ namespace AdventOfCode2020
                 .Select((i, ix) => (Instruction: i, Index: ix))
                 .Where(i => i.Instruction is JmpInstruction || i.Instruction is NopInstruction)
                 .Select(i => i.Index)
-                .ToList()
                 .Select(ix => new Computer().Execute(instructions, ix))
                 .First(c => c.Terminated)
                 .Accumulator;

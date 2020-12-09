@@ -5,6 +5,25 @@ namespace AdventOfCode2020.Helpers
 {
     public static class XmasValidatorExtensions
     {
+        public static IEnumerable<IEnumerable<long>> ContiguousSetsSumOf(this long[] sequence, long number)
+        {
+            for (int j = 0; j < sequence.Length; j++)
+            {
+                for (int i = j; i < sequence.Length; i++)
+                {
+                    var subSequense = sequence.Skip(j).Take(i - j + 1);
+                    if (subSequense.Sum() == number)
+                    {
+                        yield return subSequense;
+                    }
+                    else if (subSequense.Sum() > number)
+                    {
+                        break;
+                    }
+                }
+
+            }
+        }
 
         public static IEnumerable<(IEnumerable<long> Preamble, long NextNumber)> SplitPreambles(this long[] sequense, int preambleLength)
         {

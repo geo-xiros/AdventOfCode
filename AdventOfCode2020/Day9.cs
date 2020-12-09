@@ -31,30 +31,13 @@ namespace AdventOfCode2020
 
         protected override long GetAnswer2()
         {
-            var contiguousSet = ContiguousSetsSumOf(sequence, answer1)
+            var contiguousSet = sequence
+                .ContiguousSetsSumOf(answer1)
                 .First();
 
             return contiguousSet.Min() + contiguousSet.Max();
         }
 
-        private IEnumerable<IEnumerable<long>> ContiguousSetsSumOf(long[] sequence, long number)
-        {
-            for (int j = 0; j < sequence.Length; j++)
-            {
-                for (int i = j; i < sequence.Length; i++)
-                {
-                    var subSequense = sequence.Skip(j).Take(i - j + 1);
-                    if (subSequense.Sum() == number)
-                    {
-                        yield return subSequense;
-                    }
-                    else if (subSequense.Sum() > number)
-                    {
-                        break;
-                    }
-                }
 
-            }
-        }
     }
 }

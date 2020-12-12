@@ -166,6 +166,8 @@ namespace AdventOfCode2020.Tests
             return false;
         }
     }
+    
+    public record ComputerState(int Accumulator, int PC);
 
     public class GameConsole
     {

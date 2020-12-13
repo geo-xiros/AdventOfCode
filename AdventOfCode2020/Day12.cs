@@ -46,117 +46,115 @@ namespace AdventOfCode2020
             return ship.ManhattanDistance;
         }
 
-
-    }
-
-    public abstract class NavigationComputer
-    {
-        protected (int X, int Y) direction;
-        protected Dictionary<char, (int X, int Y)> directionsOffsets;
-
-        public record Coordinates(int X, int Y);
-        public (int X, int Y) Position { get; set; }
-
-        public NavigationComputer()
+        public abstract class NavigationComputer
         {
-            Position = (0, 0);
-            direction = (1, 0);
+            protected (int X, int Y) direction;
+            protected Dictionary<char, (int X, int Y)> directionsOffsets;
 
-            directionsOffsets = new Dictionary<char, (int X, int Y)>()
-            {
-                ['N'] = (0, 1),
-                ['S'] = (0, -1),
-                ['E'] = (1, 0),
-                ['W'] = (-1, 0)
-            };
-        }
+            public record Coordinates(int X, int Y);
+            public (int X, int Y) Position { get; set; }
 
-        public void Move(char action, int value)
-        {
-            switch (action)
+            public NavigationComputer()
             {
-                case 'R':
-                    TurnRight(value);
-                    break;
-                case 'L':
-                    TurnLeft(value);
-                    break;
-                case 'F':
-                    MoveForward(value);
-                    break;
-                default:
-                    Position = (
-                        Position.X + directionsOffsets[action].X * value,
-                        Position.Y + directionsOffsets[action].Y * value);
-                    break;
+                Position = (0, 0);
+                direction = (1, 0);
+
+                directionsOffsets = new Dictionary<char, (int X, int Y)>()
+                {
+                    ['N'] = (0, 1),
+                    ['S'] = (0, -1),
+                    ['E'] = (1, 0),
+                    ['W'] = (-1, 0)
+                };
+            }
+
+            public void Move(char action, int value)
+            {
+                switch (action)
+                {
+                    case 'R':
+                        TurnRight(value);
+                        break;
+                    case 'L':
+                        TurnLeft(value);
+                        break;
+                    case 'F':
+                        MoveForward(value);
+                        break;
+                    default:
+                        Position = (
+                            Position.X + directionsOffsets[action].X * value,
+                            Position.Y + directionsOffsets[action].Y * value);
+                        break;
+                }
+            }
+
+            public abstract void MoveForward(int value);
+
+            public virtual void TurnRight(int degrees) => direction = RotateR(direction, degrees);
+
+            public virtual void TurnLeft(int degrees) => direction = RotateL(direction, degrees);
+
+            protected (int X, int Y) RotateL((int X, int Y) coordinates, int degrees)
+            {
+                for (var i = 0; i < degrees / 90; i++)
+                {
+                    coordinates = (-coordinates.Y, coordinates.X);
+                }
+
+                return coordinates;
+            }
+
+            protected (int X, int Y) RotateR((int X, int Y) coordinates, int degrees)
+            {
+                for (var i = 0; i < degrees / 90; i++)
+                {
+                    coordinates = (coordinates.Y, -coordinates.X);
+                }
+
+                return coordinates;
             }
         }
 
-        public abstract void MoveForward(int value);
-
-        public virtual void TurnRight(int degrees) => direction = RotateR(direction, degrees);
-
-        public virtual void TurnLeft(int degrees) => direction = RotateL(direction, degrees);
-
-        protected (int X, int Y) RotateL((int X, int Y) coordinates, int degrees)
+        public class ShipNavigation : NavigationComputer
         {
-            for (var i = 0; i < degrees / 90; i++)
+            public int ManhattanDistance => Math.Abs(Position.X) +
+                Math.Abs(Position.Y);
+
+            public override void MoveForward(int value)
             {
-                coordinates = (-coordinates.Y, coordinates.X);
+                Position = (
+                    Position.X + (direction.X * value),
+                    Position.Y + (direction.Y * value));
             }
 
-            return coordinates;
         }
 
-        protected (int X, int Y) RotateR((int X, int Y) coordinates, int degrees)
+        public class WaypointNavigation : NavigationComputer
         {
-            for (var i = 0; i < degrees / 90; i++)
+            private ShipNavigation ship;
+
+            public WaypointNavigation(ShipNavigation ship)
             {
-                coordinates = (coordinates.Y, -coordinates.X);
+                this.ship = ship;
+                Position = (10, 1);
             }
 
-            return coordinates;
-        }
-    }
+            public override void MoveForward(int value)
+            {
+                ship.Move(Position.X >= 0 ? 'E' : 'W', Math.Abs(value * Position.X));
+                ship.Move(Position.Y >= 0 ? 'N' : 'S', Math.Abs(value * Position.Y));
+            }
 
-    public class ShipNavigation : NavigationComputer
-    {
-        public int ManhattanDistance => Math.Abs(Position.X) +
-            Math.Abs(Position.Y);
+            public override void TurnRight(int degrees)
+            {
+                Position = RotateR(Position, degrees);
+            }
 
-        public override void MoveForward(int value)
-        {
-            Position = (
-                Position.X + (direction.X * value),
-                Position.Y + (direction.Y * value));
-        }
-
-    }
-
-    public class WaypointNavigation : NavigationComputer
-    {
-        private ShipNavigation ship;
-
-        public WaypointNavigation(ShipNavigation ship)
-        {
-            this.ship = ship;
-            Position = (10, 1);
-        }
-
-        public override void MoveForward(int value)
-        {
-            ship.Move(Position.X >= 0 ? 'E' : 'W', Math.Abs(value * Position.X));
-            ship.Move(Position.Y >= 0 ? 'N' : 'S', Math.Abs(value * Position.Y));
-        }
-
-        public override void TurnRight(int degrees)
-        {
-            Position = RotateR(Position, degrees);
-        }
-
-        public override void TurnLeft(int degrees)
-        {
-            Position = RotateL(Position, degrees);
+            public override void TurnLeft(int degrees)
+            {
+                Position = RotateL(Position, degrees);
+            }
         }
     }
 }

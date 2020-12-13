@@ -24,16 +24,6 @@ namespace AdventOfCode2020
             return (timestamp - departTimestamp) * busId;
         }
 
-        protected override long GetAnswer2()
-        {
-            var input = busIds
-               .Select((i, ix) => (Num: i, Index: ix))
-               .Where(t => t.Num != 0)
-               .ToArray();
-
-            return FindOptimizedStep(input);
-        }
-
         private (int timestamp, long busId) FindEarliestBusAfter(int timestamp)
         {
             long busId = 0;
@@ -57,34 +47,33 @@ namespace AdventOfCode2020
             return (timestamp, busId);
         }
 
-        private long  FindOptimizedStep((long Num, int Index)[] input)
+        protected override long GetAnswer2()
         {
-            long timestamp = 0;
-            long step = 1;
-            for (var i = 0; i < input.Length; i++)
-            {
-                (timestamp, step) = GetBusTimestampAndStep(input.Take(i + 1).ToArray(), timestamp, step);
-            }
-
-            return timestamp;
+            return busIds
+                .Select((i, ix) => (Num: i, Index: ix))
+                .Where(t => t.Num != 0)
+                .ToArray()
+                .Aggregate((timestamp: 0L, step: 1L, busses: new (long Num, int Index)[] { }),
+                    (p, c) => GetBusTimestampAndStep(p.busses.Append(c).ToArray(), p.timestamp, p.step))
+                .timestamp;
         }
 
-        private  (long timestamp, long step) GetBusTimestampAndStep((long Num, int Index)[] input, long startingTimestamp, long step)
+        private (long timestamp, long step, (long Num, int Index)[] busses) GetBusTimestampAndStep((long Num, int Index)[] busses, long startingTimestamp, long step)
         {
 
-            var occuredAtTimestamp = GetBusTimestamp(input, startingTimestamp, step);
-            var secondTimestamp = GetBusTimestamp(input, occuredAtTimestamp, step);
+            var occuredAtTimestamp = GetBusTimestamp(busses, startingTimestamp, step);
+            var secondTimestamp = GetBusTimestamp(busses, occuredAtTimestamp, step);
 
-            return (occuredAtTimestamp, secondTimestamp - occuredAtTimestamp);
+            return (occuredAtTimestamp, secondTimestamp - occuredAtTimestamp, busses);
         }
 
-        private  long GetBusTimestamp((long Num, int Index)[] input, long timestamp, long step)
+        private long GetBusTimestamp((long Num, int Index)[] busses, long timestamp, long step)
         {
             while (true)
             {
                 timestamp += step;
 
-                if (input
+                if (busses
                     .All(t => ((timestamp + t.Index) % t.Num) == 0))
                 {
                     return timestamp;

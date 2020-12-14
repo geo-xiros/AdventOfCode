@@ -52,12 +52,12 @@ namespace AdventOfCode2020
                 .Select((i, ix) => (Num: i, Index: ix))
                 .Where(t => t.Num != 0)
                 .ToArray()
-                .Aggregate((timestamp: 0L, step: 1L, busses: new (long Num, int Index)[] { }),
-                    (p, c) => GetBusTimestampAndStep(p.busses.Append(c).ToArray(), p.timestamp, p.step))
+                .Aggregate((timestamp: 0L, step: 1L, busses: (Num: 0L, Index: 0)),
+                    (p, c) => GetBusTimestampAndStep(c, p.timestamp, p.step))
                 .timestamp;
         }
 
-        private (long timestamp, long step, (long Num, int Index)[] busses) GetBusTimestampAndStep((long Num, int Index)[] busses, long startingTimestamp, long step)
+        private (long timestamp, long step, (long Num, int Index) busses) GetBusTimestampAndStep((long Num, int Index) busses, long startingTimestamp, long step)
         {
 
             var occuredAtTimestamp = GetBusTimestamp(busses, startingTimestamp, step);
@@ -66,14 +66,13 @@ namespace AdventOfCode2020
             return (occuredAtTimestamp, secondTimestamp - occuredAtTimestamp, busses);
         }
 
-        private long GetBusTimestamp((long Num, int Index)[] busses, long timestamp, long step)
+        private long GetBusTimestamp((long Num, int Index) busses, long timestamp, long step)
         {
             while (true)
             {
                 timestamp += step;
 
-                if (busses
-                    .All(t => ((timestamp + t.Index) % t.Num) == 0))
+                if (((timestamp + busses.Index) % busses.Num) == 0)
                 {
                     return timestamp;
                 }

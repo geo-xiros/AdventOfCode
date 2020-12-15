@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode2020
 {
+
+
     public class Day14 : Day<long>
     {
         public Day14() : base(14)
@@ -68,10 +70,10 @@ namespace AdventOfCode2020
 
             protected long ConvertWithMask(long i, string mask)
             {
-                var bwOr = Convert.ToUInt64(mask.Replace('X', '0'), 2);
-                var bwAnd = Convert.ToUInt64(mask.Replace('X', '1'), 2);
+                var bwOr = Convert.ToInt64(mask.Replace('X', '0'), 2);
+                var bwAnd = Convert.ToInt64(mask.Replace('X', '1'), 2);
 
-                return (long)(((ulong)i & bwAnd) | bwOr);
+                return i & bwAnd | bwOr;
             }
         }
 

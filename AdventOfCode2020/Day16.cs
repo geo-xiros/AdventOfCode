@@ -6,8 +6,7 @@ namespace AdventOfCode2020
     public class Day16 : Day<long>
     {
         private FieldRules[] fieldsRules;
-        private Ticket[] nearbyTickets;
-        private Ticket ticket;
+        private Ticket[] tickets;
         private int countOfFields;
 
         public Day16() : base(16)
@@ -17,18 +16,21 @@ namespace AdventOfCode2020
                 .Select(i => new FieldRules(i))
                 .ToArray();
 
-            nearbyTickets = input
+            var nearbyTickets = input
                 .SkipWhile(i => i != "nearby tickets:")
                 .Skip(1)
-                .Select(i => new Ticket(i))
-                .ToArray();
+                .Select(i => new Ticket(i, fieldsRules));
 
-            ticket = input
+            var myTicket = input
                 .SkipWhile(i => i != "your ticket:")
                 .Skip(1)
                 .Take(1)
-                .Select(i => new Ticket(i))
+                .Select(i => new Ticket(i, fieldsRules))
                 .First();
+
+            tickets = nearbyTickets
+                .Prepend(myTicket)
+                .ToArray();
 
             countOfFields = input
                 .SkipWhile(i => i != "your ticket:")
@@ -40,66 +42,72 @@ namespace AdventOfCode2020
 
         protected override long GetAnswer1()
         {
-            return nearbyTickets
-                .SelectMany(t => t.InvalidFieldsValues(fieldsRules))
+            return tickets
+                .SelectMany(t => t.InvalidFieldValues)
                 .Sum();
         }
 
         protected override long GetAnswer2()
         {
-            var ticketsPossibleValues = nearbyTickets
-                .Where(t => t.AllFieldsAreValid(fieldsRules))
-                .Select(t => t.PossibleFieldNames(fieldsRules))
+            var validTickets = tickets
+                .Where(t => t.IsValid)
                 .ToArray();
 
-            var foundFields = new List<string>();
-            var fieldsNames = new Dictionary<string, int>();
+            var fieldsByTickets = validTickets
+                .Select(t => t.Fields.Select(f => (f.Index, f.Names)).ToDictionary(t => t.Index, t => t.Names))
+                .ToArray();
 
-            while (fieldsNames.Count() < countOfFields)
+            while (validTickets.Any(t => t.FieldsWithoutName))
             {
                 for (var f = 0; f < countOfFields; f++)
                 {
-                    var x = ticketsPossibleValues.Select(t => t[f].Except(foundFields).ToArray()).Aggregate((p, c) => p.Intersect(c).ToArray());
-                    if (x.Length == 1)
+                    var fieldNamesForAllTickets = fieldsByTickets
+                        .Select(d => d[f])
+                        .Aggregate((p, c) => p.Intersect(c).ToArray())
+                        .ToArray();
+
+                    if (fieldNamesForAllTickets.Length == 1)
                     {
-                        foundFields.Add(x[0]);
-                        fieldsNames.Add(x[0], f);
-                        System.Console.WriteLine($"field {f} {x[0]}");
+                        validTickets
+                            .ToList()
+                            .ForEach(t => t.SetFieldName(f, fieldNamesForAllTickets[0]));
                     }
                 }
             }
 
-            return fieldsNames
-                .Where(kv => kv.Key.IndexOf("departure") >= 0)
-                .Aggregate(1L, (t, kv) => t * (long)ticket[kv.Value]);
+            return validTickets
+                .First()
+                .Fields
+                .Where(f => f.Name.IndexOf("departure") >= 0)
+                .Aggregate(1L, (t, kv) => t * kv.Number);
         }
 
         public class Ticket
         {
-            public int[] Fields { get; }
+            public Field[] Fields { get; }
 
-            public Ticket(string fields)
+            public IEnumerable<int> InvalidFieldValues { get; }
+
+            public bool IsValid => !InvalidFieldValues.Any();
+
+            public bool FieldsWithoutName => Fields.Any(f => f.Name == null);
+
+            public Ticket(string fields, FieldRules[] ticketRules)
             {
                 Fields = fields
                     .Split(',')
                     .Select(int.Parse)
+                    .Select((number, i)
+                        => new Field(number, ValidNamesFor(number, ticketRules), i))
                     .ToArray();
+
+                InvalidFieldValues = Fields
+                    .Select(f => f.Number)
+                    .Where(n => !IsFieldValid(ticketRules, n));
             }
-
-            public IEnumerable<int> InvalidFieldsValues(FieldRules[] ticketRules)
-                => Fields.Where(n => !IsFieldValid(ticketRules, n));
-
-            public bool AllFieldsAreValid(FieldRules[] ticketRules)
-                => Fields.All(n => IsFieldValid(ticketRules, n));
 
             private static bool IsFieldValid(FieldRules[] ticketRules, int n)
                 => ticketRules.Any(tr => tr.IsValid(n));
-
-            public string[][] PossibleFieldNames(FieldRules[] ticketRules)
-                => Fields
-                    .Select(number
-                        => ValidNamesFor(number, ticketRules))
-                    .ToArray();
 
             private static string[] ValidNamesFor(int number, FieldRules[] ticketRules)
                 => ticketRules
@@ -107,8 +115,15 @@ namespace AdventOfCode2020
                     .Select(tr => tr.FieldName)
                     .ToArray();
 
-            public int this[int index]
-                => Fields[index];
+            internal void SetFieldName(int index, string name)
+            {
+                Fields[index].SetName(name);
+
+                foreach (var f in Fields)
+                {
+                    f.Remove(name);
+                }
+            }
         }
 
         public class FieldRules
@@ -131,6 +146,37 @@ namespace AdventOfCode2020
             public bool IsValid(int field)
             {
                 return validRange.Contains((int)field);
+            }
+        }
+
+        public class Field
+        {
+            private List<string> names;
+
+            public IEnumerable<string> Names => names;
+
+            public string Name { get; set; }
+
+            public int Index { get; }
+
+            public int Number { get; }
+
+            public Field(int number, IEnumerable<string> names, int index)
+            {
+                this.names = names.ToList();
+                Index = index;
+                Number = number;
+            }
+
+            public void SetName(string name)
+            {
+                Name = name;
+                names.Clear();
+            }
+
+            public void Remove(string name)
+            {
+                names.Remove(name);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace AdventOfCode2020
         private FieldRules[] fieldsRules;
         private Ticket[] nearbyTickets;
         private Ticket ticket;
+        private int countOfFields;
 
         public Day16() : base(16)
         {
@@ -28,6 +29,13 @@ namespace AdventOfCode2020
                 .Take(1)
                 .Select(i => new Ticket(i))
                 .First();
+
+            countOfFields = input
+                .SkipWhile(i => i != "your ticket:")
+                .Skip(1)
+                .Take(1)
+                .SelectMany(i => i.Split(','))
+                .Count();
         }
 
         protected override long GetAnswer1()
@@ -39,14 +47,15 @@ namespace AdventOfCode2020
 
         protected override long GetAnswer2()
         {
+            var ticketsPossibleValues = nearbyTickets
+                .Where(t => t.AllFieldsAreValid(fieldsRules))
+                .Select(t => t.PossibleFieldNames(fieldsRules))
+                .ToArray();
 
-            var countOfFields = nearbyTickets.Select(t => t.Fields.Length).Max();
-
-            var ticketsPossibleValues = nearbyTickets.Where(t => t.AllFieldsAreValid(fieldsRules)).Select(t => t.PossibleFieldNames(fieldsRules)).ToArray();
             var foundFields = new List<string>();
-            var fieldNamesByIndex = new Dictionary<string, int>();
+            var fieldsNames = new Dictionary<string, int>();
 
-            for (var j = 0; j < 10; j++)
+            while (fieldsNames.Count() < countOfFields)
             {
                 for (var f = 0; f < countOfFields; f++)
                 {
@@ -54,61 +63,52 @@ namespace AdventOfCode2020
                     if (x.Length == 1)
                     {
                         foundFields.Add(x[0]);
-                        fieldNamesByIndex.Add(x[0], f);
+                        fieldsNames.Add(x[0], f);
                         System.Console.WriteLine($"field {f} {x[0]}");
                     }
                 }
             }
 
-            return fieldNamesByIndex
+            return fieldsNames
                 .Where(kv => kv.Key.IndexOf("departure") >= 0)
-                .Aggregate(1L, (t, kv) => t * ticket[kv.Value]);
-            //return 0;
+                .Aggregate(1L, (t, kv) => t * (long)ticket[kv.Value]);
         }
+
         public class Ticket
         {
-            public long[] Fields { get; }
+            public int[] Fields { get; }
 
             public Ticket(string fields)
             {
                 Fields = fields
                     .Split(',')
-                    .Select(long.Parse)
+                    .Select(int.Parse)
                     .ToArray();
             }
 
-            public IEnumerable<long> InvalidFieldsValues(FieldRules[] ticketRules)
+            public IEnumerable<int> InvalidFieldsValues(FieldRules[] ticketRules)
                 => Fields.Where(n => !IsFieldValid(ticketRules, n));
 
             public bool AllFieldsAreValid(FieldRules[] ticketRules)
                 => Fields.All(n => IsFieldValid(ticketRules, n));
 
-            private static bool IsFieldValid(FieldRules[] ticketRules, long n)
+            private static bool IsFieldValid(FieldRules[] ticketRules, int n)
                 => ticketRules.Any(tr => tr.IsValid(n));
 
-            //public IEnumerable<(int FieldIndex, IEnumerable<string> ValidNames)> PossibleFieldNames(FieldRule[] ticketRules)
-            //{
-            //    return Fields
-            //        .Select((number, i)
-            //            => (Index: i, ValidNames: ValidNamesFor(number, ticketRules)));
-            //        //.SelectMany(t => t.ValidNames, (t, vn) => (t.Index, vn));
-            //}
             public string[][] PossibleFieldNames(FieldRules[] ticketRules)
-            {
-                return Fields
+                => Fields
                     .Select(number
                         => ValidNamesFor(number, ticketRules))
                     .ToArray();
-                //.SelectMany(t => t.ValidNames, (t, vn) => (t.Index, vn));
-            }
 
-            private static string[] ValidNamesFor(long number, FieldRules[] ticketRules)
+            private static string[] ValidNamesFor(int number, FieldRules[] ticketRules)
                 => ticketRules
                     .Where(tr => tr.IsValid(number))
                     .Select(tr => tr.FieldName)
                     .ToArray();
 
-            public long this[int index] => Fields[index];
+            public int this[int index]
+                => Fields[index];
         }
 
         public class FieldRules
@@ -128,7 +128,7 @@ namespace AdventOfCode2020
                     .Concat(Enumerable.Range(range2[0], range2[1] - range2[0] + 1));
             }
 
-            public bool IsValid(long field)
+            public bool IsValid(int field)
             {
                 return validRange.Contains((int)field);
             }

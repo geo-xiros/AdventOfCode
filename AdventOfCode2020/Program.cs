@@ -7,15 +7,16 @@ namespace AdventOfCode2020
     {
         static void Main(string[] args)
         {
-            var dayType = typeof(IDay);
+            Solve(new Day15());
+            //var dayType = typeof(IDay);
 
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .Where(t => dayType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
-                .Select(t => (IDay)Activator.CreateInstance(t))
-                .ToList()
-                .ForEach(Solve);
+            //AppDomain.CurrentDomain
+            //    .GetAssemblies()
+            //    .SelectMany(a => a.GetTypes())
+            //    .Where(t => dayType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
+            //    .Select(t => (IDay)Activator.CreateInstance(t))
+            //    .ToList()
+            //    .ForEach(Solve);
         }
 
         private static void Solve(IDay day)

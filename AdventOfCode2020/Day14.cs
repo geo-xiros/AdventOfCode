@@ -6,8 +6,6 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode2020
 {
-
-
     public class Day14 : Day<long>
     {
         public Day14() : base(14)

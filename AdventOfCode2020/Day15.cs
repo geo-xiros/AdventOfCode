@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace AdventOfCode2020
 {
+    
     public class Day15 : Day<long>
     {
         public Day15() : base(15)
